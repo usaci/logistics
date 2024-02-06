@@ -139,19 +139,31 @@
                         }
 
                     }
-                    
+
                     // ズーム制御
                     const cameraZoom = (e) => {
-                        console.log(e.deltaY);
                         if(this.cameraZoom < 0.5 && this.cameraZoom > 0.01) {
+                        
                             this.cameraZoom -= (e.deltaY / this.h) * .01;
+                            console.log(this.cameraZoom);
                             const cameraOffset = this.cameraZoom;
                             camera.left = (this.w / - 2) * cameraOffset;
                             camera.right = (this.w / 2) * cameraOffset;
                             camera.top = (this.h / 2) * cameraOffset;
                             camera.bottom = (this.h / - 2) * cameraOffset;
                             camera.updateProjectionMatrix();
-                        } 
+
+                        } else if(this.cameraZoom <= 0.01 && deltaY < 0) {
+                            
+                            this.cameraZoom -= (e.deltaY / this.h) * .01;
+                            console.log(this.cameraZoom);
+                            const cameraOffset = this.cameraZoom;
+                            camera.left = (this.w / - 2) * cameraOffset;
+                            camera.right = (this.w / 2) * cameraOffset;
+                            camera.top = (this.h / 2) * cameraOffset;
+                            camera.bottom = (this.h / - 2) * cameraOffset;
+                            camera.updateProjectionMatrix();
+                        }
                     }
 
                     document.addEventListener('wheel', cameraZoom);
