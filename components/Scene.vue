@@ -1,26 +1,26 @@
 <script>
     import * as THREE from 'three';
     import { gsap } from "gsap";
-    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     import { MapControls } from 'three/addons/controls/MapControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { RGBELoader } from "three/addons/loaders/RGBELoader";
-    import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
     export default {
         data() {
             return {
-                w: window.innerWidth,
-                h: window.innerHeight,
+                w: "",
+                h: "",
                 posRangeX: 50,
                 cameraZoom: .17,
                 mouseX: 0,
                 mouseY: 0,
-                openWindow: false
             }
         },
         mounted() {
+            // 
+            this.w = window.innerWidth;
+            this.h = window.innerHeight;
             // three.jsに関する記述
+            console.log(this.w)
             const init = () => {
                 const canvas = this.$el;
 
@@ -59,17 +59,6 @@
                 }, undefined, (error) => {
                     console.error( error );
                 })
-
-                // // controls
-                // const controls = new OrbitControls(camera, renderer.domElement);
-
-                // geometry 
-                const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
-
-                // material 
-                const boxMaterial = new THREE.MeshPhongMaterial({color: 0xff0000})
-                const box = new THREE.Mesh(boxGeometry, boxMaterial);
-                // scene.add(box);
 
                 // light
                 const light = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -205,7 +194,6 @@
 </script>
 <template>
         <canvas id="canvas">
-        <img src="../public/icons/alert.svg" alt="icon" class="icon">
         </canvas>
 </template>
 <style>
