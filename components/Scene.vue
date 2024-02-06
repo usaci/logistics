@@ -158,7 +158,7 @@
 
                 // MapControls
 
-                const controls = new OrbitControls( camera, renderer.domElement );
+                const controls = new MapControls( camera, renderer.domElement );
                 controls.enableDamping = true;
 
                 // rayCaster
