@@ -9,7 +9,7 @@
             return {
                 w: window.innerWidth,
                 h: window.innerHeight,
-                cameraScale: .17
+                cameraZoom: .17
             }
         },
         mounted() {
@@ -33,10 +33,9 @@
                 // scene
                 const scene = new THREE.Scene();
 
-                // camera
 
                 // デフォルトの数値
-                const cameraOffset = this.cameraScale;
+                const cameraOffset = this.cameraZoom;
                 const deg = 100;
                 const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -1000, 1000, 1000);
                 scene.add( camera );
@@ -98,41 +97,90 @@
                     camera.updateProjectionMatrix();
                 })
 
+                // マウス座標を取得
+                // default: 100
+                let currentX;
+                let targetX;
+                let offsetX = 0;
+
+                let currentY;
+                let targetY;
+                let offsetY = 0;
+
                 // render
                 const tick = () => {
                     requestAnimationFrame(tick);
+                    // camera
+
+                    // カメラを動かす
+                    const moveCamera = (e) => {
+                        targetX = (e.offsetX / this.w );
+                        offsetX = -(targetX - currentX);
+                        
+                        targetY = ( e.offsetY / this.h );
+                        offsetY = ( targetY - currentY ) * 1;
+
+                        // x軸の制御
+                        if(camera.position.x < 150 && camera.position.x > -50){
+                            camera.position.x += offsetX;
+                        }else if(camera.position.x >= 150 && offsetX < 0) {
+                            camera.position.x += offsetX;
+                        }else if(camera.position.x <= -50 && offsetX > 0) {
+                            camera.position.x += offsetX;
+                        }
+
+                        // y軸の制御
+                        if(camera.position.y < 100 && camera.position.y > 25){
+                            camera.position.y += offsetY;
+                        }else if(camera.position.y >= 100 && offsetY < 0) {
+                            camera.position.y += offsetY;
+                        }else if(camera.position.y <= 25 && offsetY > 0) {
+                        camera.position.y += offsetY;
+                        }
+
+                    }
+                    
+                    // ズーム制御
+                    const cameraZoom = (e) => {
+                        console.log(e.deltaY);
+                        if(this.cameraZoom < 0.5 && this.cameraZoom > 0.01) {
+                            this.cameraZoom -= (e.deltaY / this.h) * .01;
+                            const cameraOffset = this.cameraZoom;
+                            camera.left = (this.w / - 2) * cameraOffset;
+                            camera.right = (this.w / 2) * cameraOffset;
+                            camera.top = (this.h / 2) * cameraOffset;
+                            camera.bottom = (this.h / - 2) * cameraOffset;
+                            camera.updateProjectionMatrix();
+                        } 
+                    }
+
+                    document.addEventListener('wheel', cameraZoom);
+
+                    // 位置を計算する
+                    const calcPos = (e) => {
+                        document.body.style.cursor = "grab";
+                        currentX = (e.offsetX / this.w );
+                        currentY = (e.offsetY / this.h );
+                        document.addEventListener('mousemove', moveCamera)
+
+                    }
+
+                    document.addEventListener('mousedown', calcPos);
+                    document.addEventListener('mouseup', ()=> {
+                        document.body.style.cursor = "initial";
+                        document.removeEventListener('mousedown', calcPos);
+                        document.removeEventListener('mousemove', moveCamera);
+                    });
                     renderer.render(scene, camera);
                 }
                 tick();
 
                 // when you use PC
-                // ドラッグした際の座標を取得
-                let prevX;
-                let currentX;
-                let x;
-                let prevY;
-                let currentY;
-                const moveSceneInPC = (e) => {
-                    x = ( e.clientX / this.w - 0.5) * 2;
-                    console.log(x);
-                    camera.position.x += x * 10;
-                }
-                canvas.addEventListener('mousedown', () => {
-                    canvas.addEventListener('mousemove', moveSceneInPC);
-                    canvas.style.cursor = "grab";
-                });
 
-                canvas.addEventListener('mouseup', () => {
-                canvas.removeEventListener('mousemove', moveSceneInPC);
-                                    canvas.style.cursor = "initial";
-                });
-                canvas.addEventListener('mouseleave', () => {
-                canvas.removeEventListener('mousemove', moveSceneInPC);
-                });
 
                 // canvas.addEventListener('mousedown', (e) => {
-                //     prevX = (e.clientX / this.w - 0.5 )* 2;
-                //     prevY = - ( (e.clientY/ this.h - 0.5 )* 2 );
+                //     prevX = (e.clientX / this.w - 0.5 );
+                //     prevY = - ( (e.clientY/ this.h - 0.5 ));
                 //     console.log(e);
                 //     canvas.style.cursor = "grab";
                 // })
@@ -140,12 +188,12 @@
                 //     console.log( -(e.clientY / this.h - 0.5) * 2);
                 // })
                 // canvas.addEventListener('mouseup', (e) => {
-                //     currentX = - ( (e.clientX / this.w - 0.5 )* 2 - prevX );
-                //     currentY = -( (e.clientY / this.h - 0.5 )* 2 - prevY );
+                //     currentX = - ( (e.clientX / this.w - 0.5 ) - prevX );
+                //     currentY = -( (e.clientY / this.h - 0.5 ) - prevY );
                 //     gsap.to(camera.position, {
-                //         duration: .6,
+                //         duration: .4,
                 //         x: currentX * 300,
-                //         y: currentY * 200
+                //         z: currentY * 200
                 //     })
                 //     canvas.style.cursor = "initial";
                 // })
