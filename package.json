@@ -15,6 +15,7 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
+    "destyle.css": "^4.0.1",
     "gsap": "^3.12.5",
     "three": "^0.161.0"
   }

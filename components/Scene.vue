@@ -2,14 +2,21 @@
     import * as THREE from 'three';
     import { gsap } from "gsap";
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { MapControls } from 'three/addons/controls/MapControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { RGBELoader } from "three/addons/loaders/RGBELoader";
+    import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+
     export default {
         data() {
             return {
                 w: window.innerWidth,
                 h: window.innerHeight,
-                cameraZoom: .17
+                posRangeX: 50,
+                cameraZoom: .17,
+                mouseX: 0,
+                mouseY: 0,
+                openWindow: false
             }
         },
         mounted() {
@@ -71,14 +78,66 @@
 
                 // lightHelper
                 const lightHelper = new THREE.DirectionalLightHelper( light, 5 );
-                scene.add(lightHelper);
+                // scene.add(lightHelper);
 
                 // ambient
                 const ambient = new THREE.AmbientLight(0xffffff, 2.5);
                 scene.add(ambient);
 
-                // helpers
+                /*========================
 
+                icon
+
+                ========================*/
+
+                // iconGroup
+                const iconGroup = new THREE.Group();
+                scene.add(iconGroup);
+
+                // アイコンをcanvas上で描画する
+                const iconGeometry = new THREE.PlaneGeometry(11, 15, 15);
+                const textureLoader = new THREE.TextureLoader();
+                const iconTexture = textureLoader.load('icons/alert.png')
+                iconTexture.encoding = THREE.sRGBEncoding;
+                const iconMaterial = new THREE.MeshBasicMaterial({
+                    map: iconTexture,
+                    side: THREE.DoubleSide,
+                    opacity: 1,
+                    transparent: true,
+                    lightMapIntensity: 0,
+
+                })
+                const icon = new THREE.Mesh(iconGeometry, iconMaterial);
+                icon.position.set(0, 40, 0)
+                icon.name = "icon";
+
+                iconGroup.add(icon);
+                icon.rotation.y = Math.PI/180 * 45;
+
+                // マウス座標取得
+                const mouse = new THREE.Vector2();
+                const getMousePosition = (event) => {
+                    const element = event.currentTarget;
+                    // canvas要素上のXY座標
+                    const x = event.clientX - element.offsetLeft;
+                    const y = event.clientY - element.offsetTop;
+                    // canvas要素の幅・高さ
+                    const w = element.offsetWidth;
+                    const h = element.offsetHeight;
+
+                    // -1〜+1の範囲で現在のマウス座標を登録する
+                    mouse.x = ( x / w ) * 2 - 1;
+                    mouse.y = -( y / h ) * 2 + 1;
+
+                }
+
+                canvas.addEventListener('mousemove', getMousePosition)
+
+                /*========================
+
+                resize
+
+                ========================*/
 
                 // watch change of windowSize
                 window.addEventListener('resize', () => {
@@ -97,134 +156,68 @@
                     camera.updateProjectionMatrix();
                 })
 
-                // マウス座標を取得
-                // default: 100
-                let currentX;
-                let targetX;
-                let offsetX = 0;
+                // MapControls
 
-                let currentY;
-                let targetY;
-                let offsetY = 0;
+                const controls = new OrbitControls( camera, renderer.domElement );
+                controls.enableDamping = true;
+
+                // rayCaster
+                const raycaster = new THREE.Raycaster()
 
                 // render
                 const tick = () => {
                     requestAnimationFrame(tick);
-                    // camera
-
-                    // カメラを動かす
-                    const moveCamera = (e) => {
-                        targetX = (e.offsetX / this.w );
-                        offsetX = -(targetX - currentX);
-                        
-                        targetY = ( e.offsetY / this.h );
-                        offsetY = ( targetY - currentY ) * 1;
-
-                        // x軸の制御
-                        if(camera.position.x < 150 && camera.position.x > -50){
-                            camera.position.x += offsetX;
-                        }else if(camera.position.x >= 150 && offsetX < 0) {
-                            camera.position.x += offsetX;
-                        }else if(camera.position.x <= -50 && offsetX > 0) {
-                            camera.position.x += offsetX;
-                        }
-
-                        // y軸の制御
-                        if(camera.position.y < 100 && camera.position.y > 25){
-                            camera.position.y += offsetY;
-                        }else if(camera.position.y >= 100 && offsetY < 0) {
-                            camera.position.y += offsetY;
-                        }else if(camera.position.y <= 25 && offsetY > 0) {
-                        camera.position.y += offsetY;
-                        }
-
-                    }
-
-                    // ズーム制御
-                    const cameraZoom = (e) => {
-                        if(this.cameraZoom < 0.5 && this.cameraZoom > 0.01) {
-                        
-                            this.cameraZoom -= (e.deltaY / this.h) * .01;
-                            console.log(this.cameraZoom);
-                            const cameraOffset = this.cameraZoom;
-                            camera.left = (this.w / - 2) * cameraOffset;
-                            camera.right = (this.w / 2) * cameraOffset;
-                            camera.top = (this.h / 2) * cameraOffset;
-                            camera.bottom = (this.h / - 2) * cameraOffset;
-                            camera.updateProjectionMatrix();
-
-                        } else if(this.cameraZoom <= 0.01 && deltaY < 0) {
-                            
-                            this.cameraZoom -= (e.deltaY / this.h) * .01;
-                            console.log(this.cameraZoom);
-                            const cameraOffset = this.cameraZoom;
-                            camera.left = (this.w / - 2) * cameraOffset;
-                            camera.right = (this.w / 2) * cameraOffset;
-                            camera.top = (this.h / 2) * cameraOffset;
-                            camera.bottom = (this.h / - 2) * cameraOffset;
-                            camera.updateProjectionMatrix();
-                        }
-                    }
-
-                    document.addEventListener('wheel', cameraZoom);
-
-                    // 位置を計算する
-                    const calcPos = (e) => {
-                        document.body.style.cursor = "grab";
-                        currentX = (e.offsetX / this.w );
-                        currentY = (e.offsetY / this.h );
-                        document.addEventListener('mousemove', moveCamera)
-
-                    }
-
-                    document.addEventListener('mousedown', calcPos);
-                    document.addEventListener('mouseup', ()=> {
-                        document.body.style.cursor = "initial";
-                        document.removeEventListener('mousedown', calcPos);
-                        document.removeEventListener('mousemove', moveCamera);
-                    });
+                    controls.update();
+                    raycaster.setFromCamera(mouse, camera)
                     renderer.render(scene, camera);
+                    const intersects = raycaster.intersectObjects(scene.children[3].children);
+
+                    iconGroup.children.map((mesh) => {
+                        if(intersects.length > 0 && intersects[0].object === mesh) {
+                            gsap.to(mesh.scale, {
+                                duration: .4,
+                                x: 1.2,
+                                y: 1.2,
+                                z: 1.2
+                            })
+                            canvas.addEventListener('click', (e)=> {
+                                console.log('link');
+                            })
+                            document.body.style.cursor = "pointer";
+                        }else {
+                            gsap.to(mesh.scale, {
+                                duration: .4,
+                                x: 1.0,
+                                y: 1.0,
+                                z: 1.0
+                            })
+                            document.body.style.cursor = "initial";
+                        }
+                    })
+
                 }
                 tick();
 
-                // when you use PC
-
-
-                // canvas.addEventListener('mousedown', (e) => {
-                //     prevX = (e.clientX / this.w - 0.5 );
-                //     prevY = - ( (e.clientY/ this.h - 0.5 ));
-                //     console.log(e);
-                //     canvas.style.cursor = "grab";
-                // })
-                // canvas.addEventListener('mousemove', (e) => {
-                //     console.log( -(e.clientY / this.h - 0.5) * 2);
-                // })
-                // canvas.addEventListener('mouseup', (e) => {
-                //     currentX = - ( (e.clientX / this.w - 0.5 ) - prevX );
-                //     currentY = -( (e.clientY / this.h - 0.5 ) - prevY );
-                //     gsap.to(camera.position, {
-                //         duration: .4,
-                //         x: currentX * 300,
-                //         z: currentY * 200
-                //     })
-                //     canvas.style.cursor = "initial";
-                // })
-
-
-                // when you use SP or tablet
             }
-
-            
             init(); // execute
         }
     }
 </script>
 <template>
-    <canvas id="canvas" draggable></canvas>
+        <canvas id="canvas">
+        <img src="../public/icons/alert.svg" alt="icon" class="icon">
+        </canvas>
 </template>
 <style>
     * {
         margin: 0;
         padding: 0;
+    }
+
+
+    .icon {
+        position: absolute;
+        background-size: cover;
+        background-repeat: no-repeat;
     }
 </style>
