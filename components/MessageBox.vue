@@ -17,6 +17,10 @@
             closeMsgBox() {
                 this.$emit('onClose', false);
                 this.isOpenStatus = this.$props.isOpen;
+            },
+            openModal() {
+                this.$emit('onOpenModal', true);
+                console.log('hello');
             }
         }, 
     }
@@ -25,12 +29,13 @@
     <div class="msgBox" :class="{ isOpen }">
         <h2 class="msgBox__title">{{ title }}</h2>
         <p class="msgBox__text">{{ msg }}</p>
-        <button class="msgBox__btn" @click="console.log('open')">ここにボタンが入ります。</button>
+        <button class="msgBox__btn" @click="openModal">詳しく聞いてみる</button>
         <button class="msgBox__btn msgBox__btn-border" @click="closeMsgBox">とじる</button>
     </div>
 </template>
 <style>
     .msgBox {
+        width: 30%;
         max-width: 500px;
         position: absolute;
         background: #fff;
@@ -66,7 +71,7 @@
         padding: 1rem 2rem;
         width: 100%;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 1.4rem;
     }
 
     .msgBox__btn.msgBox__btn-border {

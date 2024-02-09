@@ -17,16 +17,24 @@
                 msgBoxId: "",
             }
         },
+        props: {
+            whereSceneIs: Number
+        },
+        watch: {
+            whereSceneIs() {
+                // console.log(this.$props.whereSceneIs)
+            }
+        },
         methods: {
             submitMsgBox() {
                 this.$emit('onClick', this.msgBox, this.msgBoxId);
             }
         },
         mounted() {
-            // 
-            console.log(this.$el);
+            // 初期のウィンドウサイズを設定
             this.w = window.innerWidth;
             this.h = window.innerHeight;
+
             // three.jsに関する記述
             console.log(this.w)
             const init = () => {
@@ -123,7 +131,7 @@
 
                 // 2つ目
                 const icon2 = new THREE.Mesh(iconGeometry, iconMaterial);
-                icon2.position.set(0, 35, 20)
+                icon2.position.set(40, 35, 104)
                 icon2.name = "icon2";
 
                 iconGroup.add(icon2);
