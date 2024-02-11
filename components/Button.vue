@@ -32,4 +32,10 @@
     .btn:hover {
         background: #4466e0bd;
     }
+
+    .btn.btnIsBorder:hover {
+        background: #4466E0;
+        color: #fff;
+        border: none;
+    }
 </style>

@@ -9,9 +9,9 @@ export default defineNuxtConfig({
       link: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com" },
-        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" }
+        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Barlow:wght@700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" }
       ],
-      title: "物流とわたしたち | 物流2024年問題を考える"
+      title: "物流とわたしたち | 物流2024年問題を考える", 
     }
   }
 })

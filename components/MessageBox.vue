@@ -29,8 +29,9 @@
     <div class="msgBox" :class="{ isOpen }">
         <h2 class="msgBox__title">{{ title }}</h2>
         <p class="msgBox__text">{{ msg }}</p>
-        <button class="msgBox__btn" @click="openModal">詳しく聞いてみる</button>
-        <button class="msgBox__btn msgBox__btn-border" @click="closeMsgBox">とじる</button>
+        <Button @click="closeMsgBox" :msg="btnMsg" v-if="backBtnMsg == ''" />
+        <Button @click="openModal" :msg="btnMsg" v-else />
+        <Button @click="closeMsgBox" :msg="backBtnMsg" v-if="backBtnMsg" :btnIsBorder="true"/>
     </div>
 </template>
 <style>
