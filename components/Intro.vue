@@ -1,7 +1,7 @@
 <template>
     <section class="intro">
         <div class="inner">
-            <h1 class="mainTitle"><img src="/_nuxt/logo.png" alt="物流と私たち /"></h1>
+            <h1 class="mainTitle"><img src="/logo.png" alt="物流と私たち /"></h1>
             <p class="subTitle">物流2024年問題について考える</p>
             <div class="intro__text" :class="{isTextOpen: this.isTextOpen}">
                 <p>2024年より、トラック運転手をはじめとした運転業務に従事する労働者に対して、
