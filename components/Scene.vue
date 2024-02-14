@@ -20,6 +20,7 @@
             whereSceneIs: Number,
             msgBoxIsOpen: Boolean,
             checkedIcon: Array,
+            modalIsOpen: Boolean,
         },
         methods: {
             submitMsgBox() {
@@ -65,6 +66,7 @@
             camera.position.set(deg, deg * .75, deg);
             // camera.position.set(0, 100, 0)
             camera.aspect = width / height;
+            camera.zoom = .1;
             this.camera = camera;
 
             // gridHelper
@@ -107,22 +109,20 @@
             scene.add(iconGroup);
             this.iconGroup = iconGroup;
 
-            // アイコンをcanvas上で描画する
-            const iconGeometry = new THREE.PlaneGeometry(7.5, 10, 10);
-            const textureLoader = new THREE.TextureLoader();
-            const iconTexture = textureLoader.load('icons/alert.png')
-            iconTexture.encoding = THREE.sRGBEncoding;
-            const iconMaterial = new THREE.MeshBasicMaterial({
-                map: iconTexture,
-                side: THREE.DoubleSide,
-                opacity: 1,
-                transparent: true,
-                lightMapIntensity: 0,
-
-            })
-
             // ------------------------- iconを配置する
             const createIcon = (name, posX, posY, posZ) => {
+                // アイコンをcanvas上で描画する
+                const iconGeometry = new THREE.PlaneGeometry(7.5, 10, 10);
+                const textureLoader = new THREE.TextureLoader();
+                const iconTexture = textureLoader.load('icons/alert.png');
+                iconTexture.encoding = THREE.sRGBEncoding;
+                const iconMaterial = new THREE.MeshBasicMaterial({
+                    map: iconTexture,
+                    side: THREE.DoubleSide,
+                    opacity: 1,
+                    transparent: true,
+                    lightMapIntensity: 0,
+                })
                 const icon = new THREE.Mesh(iconGeometry, iconMaterial);
                 icon.position.set(posX, posY, posZ);
                 icon.name = name;
@@ -243,18 +243,10 @@
                 iconGroup.children.map((mesh) => {
                     // シーン3以降で有効になる
                     if(this.whereSceneIs > 2) {
-                        
-                        // controlsを有効にする
-                        controls.enabled = true;
-
                         // マウスカーソルの状態変化
-                        if(intersects.length > 0 ) {
-                            document.body.style.cursor = "pointer";
-
-                        } else {
-                            document.body.style.cursor = "initial";
-                        }
-                        if(intersects.length > 0 && intersects[0].object === mesh && this.msgBox === false) {
+                        intersects.length > 0 && this.msgBoxIsOpen === false ? document.body.style.cursor = "pointer" : document.body.style.cursor = "initial"; 
+                        
+                        if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
                             gsap.to(mesh.scale, {
                                 duration: .4,
                                 x: 1.2,
@@ -273,8 +265,10 @@
                         }
 
                         // レイキャスターをクリックした時の処理
-                    if(intersects.length > 0 && this.msgBox === false) {
+                    if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
                         if(this.iconIsClicked) {
+                            // 一時的にcontrolsを無効にする
+                            this.controls.enabled = false;
                             // 目標位置を取得する
                             let pos = new THREE.Vector3();
                             intersects[0].object.getWorldPosition(pos);
@@ -302,21 +296,18 @@
                                 zoom: 3
                             })
 
-                            // 一時的にcontrolsを無効にする
-                            controls.enabled = false;
 
                             // 1.5秒後にメッセージを表示する
                             const openModal = () => {
                                 this.msgBox = true;
                                 this.msgBoxId = intersects[0].object.name;
                                 this.submitMsgBox();
-                                this.checkedModal++;
-
-                                // 再びcontrolsを有効にする
-                                controls.enabled = true;
                             }
-
-                            setTimeout(openModal, 1500);
+                            if(this.camera.zoom === 3) {
+                                openModal();
+                            } else {
+                                setTimeout(openModal, 1500);
+                            }
                             raycaster.setFromCamera(this.mouse, camera);
                             controls.update();
                             camera.updateProjectionMatrix();
@@ -339,8 +330,16 @@
 
         }, 
         watch: {
-            whereSceneIs() {
+            whereSceneIs(val) {
                 // シーンを進める処理を行う
+                // シーン1ではカメラをズームインし、雲を動かす
+                if(val === 1) {
+                    gsap.to(this.camera, {
+                        ease: "power1.inOut",
+                        duration: 3,
+                        zoom: 1
+                    })
+                }
                 // シーン2では5秒前後でiconが次々と増えていく
                 if(this.whereSceneIs === 2) {
                     this.iconGroup.children.map((mesh) => {
@@ -364,24 +363,38 @@
                 // シーン3では操作説明
                 // シーン4で自由にシーンを回遊可能
             }, 
-            msgBoxIsOpen() {
-                this.msgBox = this.msgBoxIsOpen;
-            }, 
             "checkedIcon": {
                 // アイコンのチェック状態を監視
                 handler: function (val) {
                     // 最後尾の要素 = 直前に追加されたアイコン に対して処理を実行する
-                    console.log(val[val.length - 1]);
                     this.iconGroup.children.map((mesh) => {
                         if(mesh.name === val[val.length - 1]) {
                             // アイコンを回転させる
-                            console.log(mesh);
-                            // テクスチャをチェック済みに変更する
+                            setTimeout(() => {
+                                gsap.to(mesh.rotation, {
+                                    duration: 1,
+                                    y: mesh.rotation.y + Math.PI/180 * 360,
+                                })
+                                // テクスチャをチェック済みに変更する
+                                const textureLoader2 = new THREE.TextureLoader();
+                                const iconTextureChecked = textureLoader2.load('icons/checked.png');
+                                iconTextureChecked.encoding = THREE.sRGBEncoding;
+                                mesh.material.map = iconTextureChecked;
+                            }, 500);
+   
                         }
                     })
                 },
                 deep: true
             },
+            modalIsOpen(val) {
+                // モーダルが開いた時にcontrolsを無効にする
+                val === true ? this.controls.enabled = false: this.controls.enabled = true;
+            }, 
+            msgBoxIsOpen(val) {
+                //  メッセージボックスが開いた時にcontrolsを無効にする
+                val === true ? this.controls.enabled = false: this.controls.enabled = true;
+            }
         },
     }
 </script>

@@ -1,10 +1,11 @@
 <template>
   <div>
     <Intro :class="{isHidden: isStartHidden}" @onClickStart="hiddenStart" />
-    <Scene @onClick="toggleMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon"/>
+    <Scene @onClick="toggleMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" />
     <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onClose="toggleMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" />
     <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox"/>
     <Date :whereSceneIs="this.whereSceneIs"/>
+    <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openModal" />
   </div>
 </template>
 <script>
@@ -34,6 +35,7 @@
         modalIsOpen: false,
         modalId: String,
         checkedIcon: [],
+        thinkingBtnIsOpen: false,
       }
     },
     methods: {
@@ -68,7 +70,10 @@
           // モーダルウィンドウを表示する
           this.msgBoxIsOpen = !this.msgBoxIsOpen;
           this.modalIsOpen = true;
-
+  
+      },
+      closeModalBox() {
+        this.modalIsOpen = false;
           // アイコンをチェック済みにする
           if(this.whereSceneIs > 2) {
             let checked = this.checkedIcon.indexOf(this.msgBoxId);
@@ -76,11 +81,7 @@
               this.checkedIcon.push(this.msgBoxId);
             }
           }
-  
-      },
-      closeModalBox() {
-        this.modalIsOpen = false;
-      }
+      }, 
     }, 
     watch: {
       whereSceneIs(count) {
@@ -93,7 +94,7 @@
             this.msgBoxMsg = "<p>ここは日本のとある街です。物流2024年問題によって、この街でどのような問題が起こっているかを見てみましょう。</p>";
             this.msgBoxBtn = "時間を進める";
             this.msgBoxBtnClose = "";
-            }, 1000);
+            }, 3500);
 
         }else if(count === 2) {
           // シーン３で8秒後にダイアログを再び表示
@@ -111,11 +112,15 @@
           // シーン1: ダイアログを表示し、時間経過を表す
 
         }
-      }, 
-      checkedIcon(icons) {
-        if(icons.length > 2) {
-          console.log('3つ以上のアイコンが選択されました');
-        }
+      },
+      "checkedIcon": {
+        handler(val) {
+          if(val.length > 3) {
+            // 3つ以上のアイコンをクリックしたら、ボタンを表示する
+            this.thinkingBtnIsOpen = true;
+          }
+        }, 
+        deep: true,
       }
     }
     
@@ -132,5 +137,19 @@
     letter-spacing: 0.1em;
     line-height: 1.7;
     font-weight: 500;
+  }
+
+  .toThinking {
+    position: absolute;
+    display: none;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40rem;
+    font-size: 2.4rem;
+  }
+
+  .toThinking.isOpen {
+    display: block;
   }
 </style>

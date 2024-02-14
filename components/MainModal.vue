@@ -47,7 +47,6 @@
             closeModal() {
                 this.$emit('onCloseModal', false);
                 this.isOpenStatus = !this.isOpenStatus;
-                console.log('modalClose');
             }
         }
     }
