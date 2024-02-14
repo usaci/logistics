@@ -1,4 +1,5 @@
 <script>
+    import * as sanitizeHtml from 'sanitize-html';
     export default {
         data() {
             return {
@@ -11,7 +12,8 @@
             msg: String,
             btnMsg: String,
             backBtnMsg: String,
-            isOpen: Boolean
+            isOpen: Boolean, 
+            whereSceneIs: Number,
         },
         methods: {
             closeMsgBox() {
@@ -19,8 +21,10 @@
                 this.isOpenStatus = this.$props.isOpen;
             },
             openModal() {
-                this.$emit('onOpenModal', true);
-                console.log('hello');
+                if(this.$props.whereSceneIs > 2){
+                    this.$emit('onOpenModal', true);
+                    console.log('hello');
+                }
             }
         }, 
     }
@@ -28,7 +32,7 @@
 <template>
     <div class="msgBox" :class="{ isOpen }">
         <h2 class="msgBox__title">{{ title }}</h2>
-        <p class="msgBox__text">{{ msg }}</p>
+        <div class="msgBox__text" v-html="msg"></div>
         <Button @click="closeMsgBox" :msg="btnMsg" v-if="backBtnMsg == ''" />
         <Button @click="openModal" :msg="btnMsg" v-else />
         <Button @click="closeMsgBox" :msg="backBtnMsg" v-if="backBtnMsg" :btnIsBorder="true"/>
@@ -62,6 +66,15 @@
     }
 
     .msgBox__text {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .msgBox__text p {
+        text-align: left;
+    }
+
+    .msgBox__personImg {
         margin-bottom: 2rem;
     }
 

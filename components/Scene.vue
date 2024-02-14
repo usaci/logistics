@@ -9,37 +9,40 @@
             return {
                 w: "",
                 h: "",
-                posRangeX: 50,
-                cameraZoom: .17,
-                mouseX: 0,
-                mouseY: 0,
+                mouse: {x: Number, y: Number},
                 msgBox: false,
                 msgBoxId: "",
-                icon1: "",
                 iconGroup: "",
+                iconIsClicked: false,
             }
         },
         props: {
             whereSceneIs: Number,
-            msgBoxIsOpen: Boolean
+            msgBoxIsOpen: Boolean,
+            checkedIcon: Array,
         },
+        methods: {
+            submitMsgBox() {
+                // どのメッセージボックスを表示するのかを親コンポーネントに送信する
+                this.$emit('onClick', this.msgBox, this.msgBoxId);
+            }, 
+        }, 
         mounted() {
             // 初期のウィンドウサイズを設定
             this.w = window.innerWidth;
             this.h = window.innerHeight;
 
-            if(this.whereSceneIs === 1) {
-                console.log('hello');
-            }
-
             // three.jsに関する記述å
             const canvas = this.$el;
+            this.canvas = canvas;
 
             // renderer
             const renderer = new THREE.WebGLRenderer({
                 canvas: canvas,
                 antialias: true
             })
+
+            this.renderer = renderer;
 
             const width = this.w;
             const height = this.h;
@@ -50,15 +53,26 @@
 
             // scene
             const scene = new THREE.Scene();
-    
+            this.scene = scene;
+
             // デフォルトの数値
-            const cameraOffset = this.cameraZoom;
+            const cameraOffset = .17;
             const deg = 100;
             const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -1000, 1000, 1000);
+            const cameraHelper = new THREE.CameraHelper(camera);
+            // scene.add(cameraHelper);
             scene.add( camera );
             camera.position.set(deg, deg * .75, deg);
-            camera.lookAt(new THREE.Vector3(0, 0, 0));
+            // camera.position.set(0, 100, 0)
             camera.aspect = width / height;
+            this.camera = camera;
+
+            // gridHelper
+            var size = 1000;
+            var step = 100;
+
+            var gridHelper = new THREE.GridHelper(size, step);
+            scene.add(gridHelper);
 
             // loader
             const loader = new GLTFLoader();
@@ -74,6 +88,7 @@
             const light = new THREE.DirectionalLight(0xffffff, 1.5);
             scene.add(light);
             light.position.set(100, 100, 0);
+            this.light = light;
 
             // // lightHelper
             // const lightHelper = new THREE.DirectionalLightHelper( light, 5 );
@@ -107,37 +122,51 @@
             })
 
             // ------------------------- iconを配置する
-            // 1つ目
-            const icon1 = new THREE.Mesh(iconGeometry, iconMaterial);
-            icon1.scale.set(new THREE.Vector3(0, 0, 0));
-            icon1.position.set(0, 35, 0)
-            icon1.name = "icon1";
-            icon1.rotation.y = Math.PI/180 * 45;
-            iconGroup.add(icon1);
-            this.icon1 = icon1;
+            const createIcon = (name, posX, posY, posZ) => {
+                const icon = new THREE.Mesh(iconGeometry, iconMaterial);
+                icon.position.set(posX, posY, posZ);
+                icon.name = name;
+                iconGroup.add(icon);
+                icon.rotation.y = Math.PI/180 * 45;
 
-            // 2つ目
-            const icon2 = new THREE.Mesh(iconGeometry, iconMaterial);
-            icon2.position.set(40, 35, 104)
-            icon2.name = "icon2";
+            }
 
-            iconGroup.add(icon2);
-            icon2.rotation.y = Math.PI/180 * 45;       
+            // 1つ目　ラーメン屋
+            createIcon("icon1", 14, 15, 58);
+
+            // // 2つ目　八百屋
+            createIcon("icon2", 14, 15, 75);   
             
-            
-            // 3つ目
-            const icon3 = new THREE.Mesh(iconGeometry, iconMaterial);
-            icon3.position.set(17, 30, 104)
-            icon3.name = "icon3";
+            // // 3つ目　コンビニ
+            createIcon("icon3", -10, 15, 75);
 
-            iconGroup.add(icon3);
-            icon3.rotation.y = Math.PI/180 * 45;   
+            // // 4つ目 スーパーマーケット
+            createIcon("icon4", -73, 15, 60);
 
+            // // 5つ目 カーディーラー
+            createIcon("icon5", 52, 15, 60);
+
+            // // 6つ目 住宅街
+            createIcon("icon6", 61, 15, 0); 
+
+
+            // // 7つ目 病院
+            createIcon("icon7", 50, 25, -60);   
+
+            // // 8つ目 メーカー
+            createIcon("icon8", -60, 55, 0);
+
+
+            // グループでまとめて制御する
+            this.iconGroup = iconGroup;
+            iconGroup.children.map((mesh) => {
+                mesh.scale.set(0, 0, 0);
+
+            })
 
             // ------------------------- icon終了
 
             // マウス座標取得
-            const mouse = new THREE.Vector2();
             const getMousePosition = (event) => {
                 const element = event.currentTarget;
                 // canvas要素上のXY座標
@@ -148,12 +177,13 @@
                 const h = element.offsetHeight;
 
                 // -1〜+1の範囲で現在のマウス座標を登録する
-                mouse.x = ( x / w ) * 2 - 1;
-                mouse.y = -( y / h ) * 2 + 1;
+                this.mouse.x = ( x / w ) * 2 - 1;
+                this.mouse.y = -( y / h ) * 2 + 1;
 
             }
-
-            canvas.addEventListener('mousemove', getMousePosition)
+            // マウスカーソルが動くたびに座標を取得
+            // 初期化
+            canvas.addEventListener('mousemove', getMousePosition);
 
             // リサイズ処理
             window.addEventListener('resize', () => {
@@ -169,58 +199,70 @@
                 camera.top = (this.h / 2) * cameraOffset;
                 camera.bottom = (this.h / - 2) * cameraOffset;
                 camera.updateProjectionMatrix();
+                controls.update();
             })
 
             // MapControls
 
-            const controls = new MapControls( camera, renderer.domElement );
+            const controls = new MapControls( camera, canvas );
+            controls.target.set(0, 0, 0);
+            controls.enabled = false;
+            controls.enableRotate = false;
             controls.enableDamping = true;
+            controls.enablePan = true; // パンを有効にする
+            this.controls = controls;
 
             // rayCaster
             const raycaster = new THREE.Raycaster();
-            canvas.addEventListener('click', () => {
-                raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects(scene.children[3].children);
-                // アイコンがクリックされた時
-                iconGroup.children.map((mesh) => {
-                    if(this.whereSceneIs > 2) {   
-                        if(intersects.length > 0 && intersects[0].object === mesh && this.msgBox === false) {
-                            this.msgBox = !this.msgBox;
-                            this.msgBoxId = mesh.name;
-                            this.submitMsgBox();
-                            document.body.style.cursor = "pointer";
-                            console.log(this.msgBox, this.msgBoxId);
-                            if(intersects.length > 0 && intersects[0].object === mesh ) {
-                                // this.msgBox = true;
-                            }
-                
-                        }else {
-                            document.body.style.cursor = "initial";
-                        }
-                    }
-                
-                })
-            })
+            raycaster.near = -10000;
+            raycaster.far = 10000;
 
             // render
+            const onMouseDown = (event) => {
+                this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                this.iconIsClicked = true; // マウスが押されたときにフラグを設定
+            }
+
+            const onMouseUp = () => {
+                this.iconIsClicked = false; // マウスが離されたときにフラグをリセット
+            }
+
             const tick = () => {
-                // メイン部分の挙動
+                // メイン部分の挙
+                // カメラの位置を更新（例：x軸方向に10移動）
+                // カメラの変更をレンダラーに通知
+                // レイキャスターの始点と方向を取得
                 requestAnimationFrame(tick);
-                controls.update();
-                raycaster.setFromCamera(mouse, camera)
+
                 renderer.render(scene, camera);
-                const intersects = raycaster.intersectObjects(scene.children[3].children);
+                const intersects = raycaster.intersectObjects(scene.children[4].children);
+                this.intersects = intersects;
+
                 // アイコンにマウスが重なった時の処理
                 iconGroup.children.map((mesh) => {
-                    if(this.whereSceneIs > 2) {                        
-                        if(intersects.length > 0 && intersects[0].object === mesh) {
+                    // シーン3以降で有効になる
+                    if(this.whereSceneIs > 2) {
+                        
+                        // controlsを有効にする
+                        controls.enabled = true;
+
+                        // マウスカーソルの状態変化
+                        if(intersects.length > 0 ) {
+                            document.body.style.cursor = "pointer";
+
+                        } else {
+                            document.body.style.cursor = "initial";
+                        }
+                        if(intersects.length > 0 && intersects[0].object === mesh && this.msgBox === false) {
                             gsap.to(mesh.scale, {
                                 duration: .4,
                                 x: 1.2,
                                 y: +1.2,
                                 z: +1.2
-                            })
-                            document.body.style.cursor = "pointer";
+                            });
+
+                            
                         }else {
                             gsap.to(mesh.scale, {
                                 duration: .4,
@@ -228,11 +270,71 @@
                                 y: +1.0,
                                 z: +1.0
                             })
-                            document.body.style.cursor = "initial";
+                        }
+
+                        // レイキャスターをクリックした時の処理
+                    if(intersects.length > 0 && this.msgBox === false) {
+                        if(this.iconIsClicked) {
+                            // 目標位置を取得する
+                            let pos = new THREE.Vector3();
+                            intersects[0].object.getWorldPosition(pos);
+
+                            // 1秒でカメラを移動する
+                            gsap.to(controls.target, {
+                                ease: "power1.inOut",
+                                duration: 1,
+                                x: pos.x,
+                                y: pos.y,
+                                z: pos.z
+                            })
+
+                            gsap.to(camera.position, {
+                                ease: "power1.inOut",
+                                duration: 1,
+                                x: pos.x + 100,
+                                y: pos.y + 75,
+                                z: pos.z + 100
+                            })
+
+                            gsap.to(camera, {
+                                ease: "power1.inOut",
+                                duration: 1,
+                                zoom: 3
+                            })
+
+                            // 一時的にcontrolsを無効にする
+                            controls.enabled = false;
+
+                            // 1.5秒後にメッセージを表示する
+                            const openModal = () => {
+                                this.msgBox = true;
+                                this.msgBoxId = intersects[0].object.name;
+                                this.submitMsgBox();
+                                this.checkedModal++;
+
+                                // 再びcontrolsを有効にする
+                                controls.enabled = true;
+                            }
+
+                            setTimeout(openModal, 1500);
+                            raycaster.setFromCamera(this.mouse, camera);
+                            controls.update();
+                            camera.updateProjectionMatrix();
+                            // １回で処理を終了する
+                            this.iconIsClicked = false;
                         }
                     }
+                    }
                 })
-            }
+                raycaster.setFromCamera(this.mouse, camera);
+                camera.updateProjectionMatrix();
+                controls.update();
+                
+                }
+
+            
+            window.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mouseup', onMouseUp);
             tick();
 
         }, 
@@ -241,16 +343,22 @@
                 // シーンを進める処理を行う
                 // シーン2では5秒前後でiconが次々と増えていく
                 if(this.whereSceneIs === 2) {
-                    console.log(this.icon1);
-                    this.icon1.scale.set(new THREE.Vector3(0, 0, 0));
-                    
-                    console.log(this.icon1);
+                    this.iconGroup.children.map((mesh) => {
+                        const random = Math.random() * 5000;
+                        const appearIcon = () => {
+                            // アイコンをスケールアップする
+                            gsap.to(mesh.scale, {
+                                duration: .4,
+                                x: +1.0,
+                                y: +1.0,
+                                z: +1.0
+                            })
+                            // 音を鳴らす
+                            const sound = new Audio('sounds/icon.mp3');
+                            sound.play();
+                        }
+                        setTimeout(appearIcon, random);
 
-                    gsap.to(this.icon1.scale, {
-                        duration: .4,
-                        x: +1.0,
-                        y: +1.0,
-                        z: +1.0
                     })
                 }
                 // シーン3では操作説明
@@ -258,13 +366,22 @@
             }, 
             msgBoxIsOpen() {
                 this.msgBox = this.msgBoxIsOpen;
-            }
-        },
-        methods: {
-            submitMsgBox() {
-                // どのメッセージボックスを表示するのかを親に送信する
-                this.$emit('onClick', this.msgBox, this.msgBoxId);
-            }
+            }, 
+            "checkedIcon": {
+                // アイコンのチェック状態を監視
+                handler: function (val) {
+                    // 最後尾の要素 = 直前に追加されたアイコン に対して処理を実行する
+                    console.log(val[val.length - 1]);
+                    this.iconGroup.children.map((mesh) => {
+                        if(mesh.name === val[val.length - 1]) {
+                            // アイコンを回転させる
+                            console.log(mesh);
+                            // テクスチャをチェック済みに変更する
+                        }
+                    })
+                },
+                deep: true
+            },
         },
     }
 </script>
