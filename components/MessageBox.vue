@@ -1,5 +1,4 @@
 <script>
-    import * as sanitizeHtml from 'sanitize-html';
     export default {
         data() {
             return {

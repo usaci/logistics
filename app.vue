@@ -3,9 +3,9 @@
     <Intro :class="{isHidden: isStartHidden}" @onClickStart="hiddenStart" />
     <Scene @onClick="toggleMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" />
     <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onClose="toggleMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" />
-    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox"/>
+    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :quote="this.modalQuote" :mainText="this.modalMsg"/>
     <Date :whereSceneIs="this.whereSceneIs"/>
-    <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openModal" />
+    <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openModalBox" />
   </div>
 </template>
 <script>
@@ -32,8 +32,73 @@
         msgBoxMsg: String,
         msgBoxBtn: String,
         msgBoxBtnClose: String, 
+        // モーダルウィンドウのグループ
+        modalGroup: [
+          {
+            id: "modal1", 
+            from: "icon1",
+            title: "また値上げ！？",
+            quote: "ここに引用が入ります",
+            mainText: 
+            "<p>この街で行列ができるラーメン屋の名物「マシマシラーメン」の価格が200円ほど上がっているようです。</p><h2>なぜ値上げが発生しうるのか</h2><p>物流2024年問題はトラックドライバーの働き方から端を発する問題です。<br>これまで長時間労働が当たり前だったトラックドライバーの待遇改善が見込まれる一方で、労働時間の減少や人手不足により運送会社の売り上げが減少することが予想されます。</p><p>運送会社は売上の減少分を輸送運賃の値上げによって補うことが予想されます。</p><p>ラーメン屋は、食材や麺、食器など様々な物資を運送業者に頼って調達しています。そのため、物流2024年問題による運賃の高騰は、ラーメン屋の経営を圧迫し、商品への価格転嫁という形で値上げが発生します。</p>",
+          },
+          {
+            id: "modal2", 
+            from: "icon2",
+            title: "新鮮な野菜が買えなくなる！？",
+            quote: "ここに引用が入ります",
+            mainText: "<p>こちらは街に昔からある八百屋さんです。<br>以前に比べて新鮮な野菜が買いにくくなってしまっているようです。</p><h2>なぜ新鮮な野菜が手に入らないのか</h2><p>物流2024年問題はトラックドライバーの働き方から端を発する問題です。<br>これまで長時間労働が当たり前だったトラックドライバーの待遇改善が見込まれる一方で、時間の制約から長距離の輸送が難しくなることが懸念されています。</p><p>野菜や肉、魚といった生鮮食品は産地から長距離の輸送を経て私たちの元に届きます。長距離輸送が難しくなることによって、鮮度を良い食品が以前よりも買いにくくなることが予想されます。</p>",
+          },
+          {
+            id: "modal3", 
+            from: "icon3",
+            title: "ここにタイトルが入ります",
+            quote: "ここに引用が入ります",
+            mainText: "ここに本文が入ります",
+          },
+          {
+            id: "modal4", 
+            from: "icon4",
+            title: "ここにタイトルが入ります",
+            quote: "ここに引用が入ります",
+            mainText: "ここに本文が入ります",
+          },
+          {
+            id: "modal5", 
+            from: "icon5",
+            title: "ここにタイトルが入ります",
+            quote: "ここに引用が入ります",
+            mainText: "ここに本文が入ります",
+          },
+          {
+            id: "modal6", 
+            from: "icon6",
+            title: "ここにタイトルが入ります",
+            quote: "ここに引用が入ります",
+            mainText: "ここに本文が入ります",
+          },
+          {
+            id: "modal7", 
+            from: "icon7",
+            title: "modal7 ここにタイトルが入ります",
+            quote: "<p>ここに引用が入ります</p>",
+            mainText: "ここに本文が入ります",
+          },
+          {
+            id: "modal8", 
+            from: "icon8",
+            title: "ここにタイトルが入ります",
+            quote: "ここに引用が入ります",
+            mainText: "ここに本文が入ります",
+          },
+
+        ], 
         modalIsOpen: false,
         modalId: String,
+        modalFrom: String,
+        modalTitle: String,
+        modalQuote: String,
+        modalMsg: String,
         checkedIcon: [],
         thinkingBtnIsOpen: false,
       }
@@ -70,6 +135,18 @@
           // モーダルウィンドウを表示する
           this.msgBoxIsOpen = !this.msgBoxIsOpen;
           this.modalIsOpen = true;
+
+          // 値に応じたモーダルウィンドウを表示
+          this.modalGroup.map((element) => {        
+            if(element.from === this.msgBoxId) {
+              console.log(typeof element.id);
+              this.modalId = element.id;
+              this.modalTitle = element.title;
+              this.modalQuote = element.quote;
+              this.modalMsg = element.mainText;
+              console.log(typeof this.modalTitle, this.modalQuote, this.modalMsg);
+            }
+          })
   
       },
       closeModalBox() {

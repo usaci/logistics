@@ -1,7 +1,29 @@
+<script>
+    export default {
+        data() {
+            return {
+                isOpenStatus: false,
+                btnIsBorder: Boolean
+            }
+        },
+        props: {
+            isOpen: Boolean,
+            title: String,
+            quote: String, 
+            mainText: "",
+        }, 
+        methods: {
+            closeModal() {
+                this.$emit('onCloseModal', false);
+                this.isOpenStatus = !this.isOpenStatus;
+            }
+        }
+    }
+</script>
 <template>
     <article class="mainModal" :class="{ isOpen }">
         <header class="mainModal__header">
-            <h2 class="mainModal__ttl">ここにタイトルが入ります。</h2>
+            <h2 class="mainModal__ttl">{{ title }}</h2>
         </header>
         <section class="mainModal__main">
             <section class="mainModal__quote">
@@ -15,42 +37,15 @@
                     </div>
                 </div>
             </section>
-            <p>ドライバーの労働時間の減少により、長距離輸送など従来通りの輸送ができなくなることが懸念されています。</p>
-            <h2>ここに見出しが入ります。</h2>
-            <p>
-                時間外労働の上限規制は、一見するとホワイトな改革とも言えますが、どうして諸問題が発生すると言われているのでしょうか。具体的に2024年問題で変わるドライバーの拘束時間の目安を見ていきます。<br>
-                実際に1か月の拘束時間を具体例として考えていきましょう。まず、時間外労働の上限である年960時間は、目安として1か月で約80時間となります。しかし今回の法律では、1か月の上限については規定がありません。<br>
-                つまり、ある月は100時間の時間外労働があっても、他の月で削減することで、年間960時間を超過しなければ問題ないという仕組みとなっています。<br>
-                これを踏まえて実際に、ドライバーの1か月の拘束時間を以下の条件にあてはめてみます。
-            </p>
+            <section class="mainModal__mainText">
+                <div v-html="mainText"></div>
+            </section>
         </section>
         <footer>
             <Button msg="とじる" :btnIsBorder="true" @click="closeModal"/>
         </footer>
     </article>
 </template>
-<script>
-    export default {
-        data() {
-            return {
-                isOpenStatus: false,
-                title: String,
-                quote: String, 
-                mainText: String,
-                btnIsBorder: Boolean
-            }
-        },
-        props: {
-            isOpen: Boolean
-        }, 
-        methods: {
-            closeModal() {
-                this.$emit('onCloseModal', false);
-                this.isOpenStatus = !this.isOpenStatus;
-            }
-        }
-    }
-</script>
 
 <style>
     .mainModal {

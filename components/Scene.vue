@@ -136,25 +136,22 @@
 
             // // 2つ目　八百屋
             createIcon("icon2", 14, 15, 75);   
-            
-            // // 3つ目　コンビニ
-            createIcon("icon3", -10, 15, 75);
 
             // // 4つ目 スーパーマーケット
-            createIcon("icon4", -73, 15, 60);
+            createIcon("icon3", -73, 15, 60);
 
             // // 5つ目 カーディーラー
-            createIcon("icon5", 52, 15, 60);
+            createIcon("icon4", 52, 15, 60);
 
             // // 6つ目 住宅街
-            createIcon("icon6", 61, 15, 0); 
+            createIcon("icon5", 61, 15, 0); 
 
 
             // // 7つ目 病院
-            createIcon("icon7", 50, 25, -60);   
+            createIcon("icon6", 50, 25, -60);   
 
             // // 8つ目 メーカー
-            createIcon("icon8", -60, 55, 0);
+            createIcon("icon7", -60, 55, 0);
 
 
             // グループでまとめて制御する
