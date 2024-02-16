@@ -29,7 +29,7 @@
             <section class="mainModal__quote">
                 <div class="inner">
                     <figure class="mainModal__quote-img">
-                        <img src="" alt="住民アイコン">
+                        <img src="/icons/person_ramen.png" alt="住民アイコン">
                     </figure>
                     <div>
                         <p class="mainModal__quote-ttl">住民A</p>
@@ -68,18 +68,22 @@
     }
 
     .mainModal .mainModal__ttl {
-        font-size: 2.4rem;
+        font-size: 2.7rem;
         font-weight: bold;
         margin-bottom: 2rem;
     }
 
-    .mainModal .mainModal__quote {
-        background: #F1F1F1;
-        padding: 2rem;
-    }
 
     .mainModal .mainModal__quote .inner {
         display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .mainModal .mainModal__quote .inner .mainModal__quote-ttl {
+        text-align: center;
+        font-weight: bold;
+        font-size: 2.0rem;
     }
 
     .mainModal .mainModal__main {
@@ -87,9 +91,11 @@
         max-height: 500px;
         overflow: scroll;;
     }
+
     .mainModal .mainModal__main * {
         margin-bottom: 2rem;
     }
+
     .mainModal .mainModal__main h2 {
         font-size: 2.0rem;
         padding: 0rem 1rem;

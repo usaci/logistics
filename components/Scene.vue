@@ -261,7 +261,7 @@
                             })
                         }
 
-                        // レイキャスターをクリックした時の処理
+                    // レイキャスターをクリックした時の処理
                     if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
                         if(this.iconIsClicked) {
                             // 一時的にcontrolsを無効にする
@@ -333,7 +333,7 @@
                 if(val === 1) {
                     gsap.to(this.camera, {
                         ease: "power1.inOut",
-                        duration: 3,
+                        duration: 3.6,
                         zoom: 1
                     })
                 }
