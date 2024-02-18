@@ -92,7 +92,7 @@
 <style>
     .date {
         position: absolute;
-        z-index: 999;
+        z-index: 100;
         right: 0;
         bottom: 0;
         font-family: 'Barlow', sans-serif;

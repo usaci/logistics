@@ -5,6 +5,7 @@
                 btnIsActive: false,
                 menuIsActive: false,
                 btnMsg: "MENU",
+                menu: this.$el,
             }
         },
         methods: {
@@ -15,9 +16,43 @@
                     console.log('toggle', this.btnIsActive, this.menuIsActive);
                     // menuの文言を変更する
                     this.btnIsActive === true ? this.btnMsg = "CLOSE" : this.btnMsg = "MENU";
+
+                    // メニューを表示する
+                    this.menuIsActive === true ? this.showMenu(): this.hideMenu();
                 }
+            }, 
+            clickIcon(e) {
+                if(this.menuIsActive === true ) {
+                    // idをScene.vueに渡す
+                    this.$emit('onClickMenuBtn', e.target.id);
+                    this.btnIsActive = !this.btnIsActive;
+                    this.menuIsActive = !this.menuIsActive;
+                    this.btnIsActive === true ? this.btnMsg = "CLOSE" : this.btnMsg = "MENU";
+                    this.menuIsActive === true ? this.showMenu(): this.hideMenu();
+                }
+            }, 
+            reset() {
+                this.$emit('onReset');
+            },
+            showMenu() {
+                // 見た目上の処理
+                const menu = this.$el.children[0].children[0];
+                menu.style.display = "block";
+                setTimeout(()=>{
+                    menu.style.opacity = 1;
+                    menu.style.visibility = "visible";
+                }, 10);
+            },
+            hideMenu() {
+                // 見た目上の処理
+                const menu = this.$el.children[0].children[0];
+                menu.style.opacity = 0;
+                menu.style.visibility = "hidden";
+                setTimeout(()=>{
+                    menu.style.display = "none";
+                }, 10);
             }
-        }, 
+         }, 
         props: {
             HeaderIsOpen: Boolean,
             whereSceneIs: Number
@@ -26,20 +61,20 @@
 </script>
 <template>
     <header class="siteHeader">
-        <div class="inner">            
+        <div class="inner" :class="{isActive: this.menuIsActive}">            
             <nav id="siteHeader__nav" :class="{ isActive: this.menuIsActive }">
                 <div class="inner">
                     <h1 class="logo"><img src="/logo.png" alt="物流とわたしたち"></h1>
                     <ul class="siteHeader__nav-list">
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" /></li>
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" /></li>
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" /></li>
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" /></li>
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" /></li>
+                        <li><Button msg="また値上げ！？" :btnIsBorder="true" @click="clickIcon" id="icon1"/></li>
+                        <li><Button msg="新鮮な野菜が買えなくなる？" :btnIsBorder="true" id="icon2" @click="clickIcon"/></li>
+                        <li><Button msg="スーパーマーケットの品揃えが悪くなる？" :btnIsBorder="true" id="icon3" @click="clickIcon"/></li>
+                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" id="icon4" @click="clickIcon"/></li>
+                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" id="icon5" /></li>
                         <li><Button msg="ここにメッセージ" :btnIsBorder="true" /></li>
                     </ul>
                     <Button msg="私たちにできることを考える" />
-                    <p class="backToStart">スタート画面にもどる</p>
+                    <button class="backToStart" @click="reset">スタート画面にもどる</button>
                 </div>
             </nav>
             <div class="siteHeader__btn" @click="toggleBtn" :class="{ isActive: this.btnIsActive }">
@@ -87,6 +122,7 @@
         z-index: 1000;
     }
 
+
     .siteHeader .siteHeader__btn .inner {
         position: absolute;
         top: 50%;
@@ -98,6 +134,12 @@
         margin: 0 auto;
         color: #fff;
         text-align: center;
+    }
+
+    .siteHeader .siteHeader__btn .inner.isActive {
+        opacity: 1;
+        pointer-events: all;
+        visibility: 1;
     }
 
     .siteHeader .siteHeader__btn .inner span {
@@ -127,14 +169,14 @@
 
     /* menu */
     .siteHeader #siteHeader__nav {
+        display: none;
         position: relative;
         opacity: 0;
-        pointer-events: none;
-        user-select: none;
+        visibility: hidden;
         background: #fff;
         width: 100vw;
         height: 100vh;
-        display: none;
+        transition: .2s;
     }
 
     .siteHeader #siteHeader__nav .inner {
@@ -147,7 +189,6 @@
         left: 50%;
     }
     
-
     .siteHeader #siteHeader__nav .inner .siteHeader__nav-list {
         display: flex;
         flex-wrap: wrap;
@@ -161,14 +202,24 @@
 
     }
 
-    .siteHeader #siteHeader__nav.isActive {
-        user-select: auto;
-        display: block;
-        opacity: 1;
-        pointer-events: all;
-    }
-
     .siteHeader #siteHeader__nav .backToStart {
         color: #ccc;
+    }
+
+    @media screen and (max-width: 768px) {
+        .siteHeader .siteHeader__btn {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            height: 100%;
+            width: 100%;
+            background: #4466E0;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
     }
 </style>

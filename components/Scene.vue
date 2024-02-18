@@ -12,7 +12,7 @@
                 mouse: {x: Number, y: Number},
                 msgBox: false,
                 msgBoxId: "",
-                iconGroup: "",
+                iconGroup: Object,
                 iconIsClicked: false,
             }
         },
@@ -21,6 +21,7 @@
             msgBoxIsOpen: Boolean,
             checkedIcon: Array,
             modalIsOpen: Boolean,
+            clickedMenuBtn: String,
         },
         methods: {
             submitMsgBox() {
@@ -56,25 +57,16 @@
             const scene = new THREE.Scene();
             this.scene = scene;
 
-            // デフォルトの数値
+            // camera
             const cameraOffset = .17;
             const deg = 100;
             const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -1000, 1000, 1000);
-            const cameraHelper = new THREE.CameraHelper(camera);
-            // scene.add(cameraHelper);
             scene.add( camera );
             camera.position.set(deg, deg * .75, deg);
-            // camera.position.set(0, 100, 0)
             camera.aspect = width / height;
             camera.zoom = .1;
             this.camera = camera;
 
-            // gridHelper
-            var size = 1000;
-            var step = 100;
-
-            var gridHelper = new THREE.GridHelper(size, step);
-            scene.add(gridHelper);
 
             // loader
             const loader = new GLTFLoader();
@@ -158,7 +150,6 @@
             this.iconGroup = iconGroup;
             iconGroup.children.map((mesh) => {
                 mesh.scale.set(0, 0, 0);
-
             })
 
             // ------------------------- icon終了
@@ -178,14 +169,32 @@
                 this.mouse.y = -( y / h ) * 2 + 1;
 
             }
+
+            const getTouchEndPosition = (event) => {
+                const element = event.currentTarget;
+                // canvas要素上のXY座標
+                const x = event.changedTouches[0].clientX - element.offsetLeft;
+                const y = event.changedTouches[0].clientY - element.offsetTop;
+                // canvas要素の幅・高さ
+                const w = element.offsetWidth;
+                const h = element.offsetHeight;
+
+                // -1〜+1の範囲で現在のマウス座標を登録する
+                this.mouse.x = ( x / w ) * 2 - 1;
+                this.mouse.y = -( y / h ) * 2 + 1;
+            }
             // マウスカーソルが動くたびに座標を取得
             // 初期化
             canvas.addEventListener('mousemove', getMousePosition);
+
+            // タッチ座標取得
+            canvas.addEventListener('touchend', getTouchEndPosition);
 
             // リサイズ処理
             window.addEventListener('resize', () => {
                 this.w = window.innerWidth;
                 this.h = window.innerHeight;
+                console.log(this.w, this.h);
 
                 // modify camera's aspect ratio
                 renderer.setSize(this.w, this.h);
@@ -200,7 +209,6 @@
             })
 
             // MapControls
-
             const controls = new MapControls( camera, canvas );
             controls.target.set(0, 0, 0);
             controls.enabled = false;
@@ -213,116 +221,196 @@
             const raycaster = new THREE.Raycaster();
             raycaster.near = -10000;
             raycaster.far = 10000;
+            this.raycaster = raycaster;
 
             // render
             const onMouseDown = (event) => {
                 this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                this.iconIsClicked = true; // マウスが押されたときにフラグを設定
+                this.iconIsClicked = true; // マウスが押されたときにフラグを設定]
             }
 
             const onMouseUp = () => {
                 this.iconIsClicked = false; // マウスが離されたときにフラグをリセット
             }
 
+            const onTouchStart = () => {
+                this.iconIsClicked = true;
+            }
+
+            const onTouchEnd = () => {
+                this.iconIsClicked = false;
+            }
+
             const tick = () => {
-                // メイン部分の挙
-                // カメラの位置を更新（例：x軸方向に10移動）
-                // カメラの変更をレンダラーに通知
-                // レイキャスターの始点と方向を取得
                 requestAnimationFrame(tick);
 
                 renderer.render(scene, camera);
-                const intersects = raycaster.intersectObjects(scene.children[4].children);
+                const intersects = raycaster.intersectObjects(scene.children[3].children);
                 this.intersects = intersects;
-
+                // PCの場合はマウス座標を取得する
                 // アイコンにマウスが重なった時の処理
                 iconGroup.children.map((mesh) => {
                     // シーン3以降で有効になる
                     if(this.whereSceneIs > 2) {
-                        // マウスカーソルの状態変化
-                        intersects.length > 0 && this.msgBoxIsOpen === false ? document.body.style.cursor = "pointer" : document.body.style.cursor = "initial"; 
-                        
-                        if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
-                            gsap.to(mesh.scale, {
-                                duration: .4,
-                                x: 1.2,
-                                y: +1.2,
-                                z: +1.2
-                            });
 
+                        // PCの場合
+                        if((window.matchMedia('(min-width: 768px)').matches)) {
+                            // マウスカーソルの状態変化
+                            intersects.length > 0 && this.msgBoxIsOpen === false ? document.body.style.cursor = "pointer" : document.body.style.cursor = "initial"; 
                             
-                        }else {
+                            if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
+                                gsap.to(mesh.scale, {
+                                    duration: .4,
+                                    x: 1.2,
+                                    y: +1.2,
+                                    z: +1.2
+                                });
+    
+                            }else {
+                                gsap.to(mesh.scale, {
+                                    duration: .4,
+                                    x: +1.0,
+                                    y: +1.0,
+                                    z: +1.0
+                                })
+                            }
+
+                            // レイキャスターをクリックした時の処理
+                            if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
+                                if(this.iconIsClicked) {
+                                    // 一時的にcontrolsを無効にする
+                                    this.controls.enabled = false;
+                                    // 目標位置を取得する
+                                    let pos = new THREE.Vector3();
+                                    intersects[0].object.getWorldPosition(pos);
+
+                                    // 1秒でカメラを移動する
+                                    gsap.to(this.controls.target, {
+                                        ease: "power1.inOut",
+                                        duration: 1,
+                                        x: pos.x,
+                                        y: pos.y,
+                                        z: pos.z
+                                    })
+
+                                    gsap.to(this.camera.position, {
+                                        ease: "power1.inOut",
+                                        duration: 1,
+                                        x: pos.x + 100,
+                                        y: pos.y + 75,
+                                        z: pos.z + 100
+                                    })
+
+                                    gsap.to(this.camera, {
+                                        ease: "power1.inOut",
+                                        duration: 1,
+                                        zoom: 3
+                                    })
+
+                                    // 1.5秒後にメッセージを表示する
+                                    const openModal = () => {
+                                        this.msgBox = true;
+                                        this.msgBoxId = intersects[0].object.name;
+                                        this.submitMsgBox();
+                                    }
+                                    if(this.camera.zoom === 3) {
+                                        openModal();
+                                    } else {
+                                        setTimeout(openModal, 1500);
+                                    }
+                                    raycaster.setFromCamera(this.mouse, camera);
+                                    controls.update();
+                                    camera.updateProjectionMatrix();
+                                    // １回で処理を終了する
+                                    this.iconIsClicked = false;
+                                }
+                            }
+
+                        } else {
                             gsap.to(mesh.scale, {
                                 duration: .4,
                                 x: +1.0,
                                 y: +1.0,
                                 z: +1.0
                             })
-                        }
+                            if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
+                                if(this.iconIsClicked) {
+                                    // 一時的にcontrolsを無効にする
+                                                    console.log(intersects.length)
+                                    this.controls.enabled = false;
+                                    // 目標位置を取得する
+                                    let pos = new THREE.Vector3();
+                                    intersects[0].object.getWorldPosition(pos);
 
-                    // レイキャスターをクリックした時の処理
-                    if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
-                        if(this.iconIsClicked) {
-                            // 一時的にcontrolsを無効にする
-                            this.controls.enabled = false;
-                            // 目標位置を取得する
-                            let pos = new THREE.Vector3();
-                            intersects[0].object.getWorldPosition(pos);
+                                    // 1秒でカメラを移動する
+                                    gsap.to(this.controls.target, {
+                                        ease: "power1.inOut",
+                                        duration: 1,
+                                        x: pos.x,
+                                        y: pos.y,
+                                        z: pos.z
+                                    })
 
-                            // 1秒でカメラを移動する
-                            gsap.to(controls.target, {
-                                ease: "power1.inOut",
-                                duration: 1,
-                                x: pos.x,
-                                y: pos.y,
-                                z: pos.z
-                            })
+                                    gsap.to(this.camera.position, {
+                                        ease: "power1.inOut",
+                                        duration: 1,
+                                        x: pos.x + 100,
+                                        y: pos.y + 75,
+                                        z: pos.z + 100
+                                    })
 
-                            gsap.to(camera.position, {
-                                ease: "power1.inOut",
-                                duration: 1,
-                                x: pos.x + 100,
-                                y: pos.y + 75,
-                                z: pos.z + 100
-                            })
+                                    gsap.to(this.camera, {
+                                        ease: "power1.inOut",
+                                        duration: 1,
+                                        zoom: 3
+                                    })
 
-                            gsap.to(camera, {
-                                ease: "power1.inOut",
-                                duration: 1,
-                                zoom: 3
-                            })
-
-
-                            // 1.5秒後にメッセージを表示する
-                            const openModal = () => {
-                                this.msgBox = true;
-                                this.msgBoxId = intersects[0].object.name;
-                                this.submitMsgBox();
-                            }
-                            if(this.camera.zoom === 3) {
-                                openModal();
-                            } else {
-                                setTimeout(openModal, 1500);
-                            }
-                            raycaster.setFromCamera(this.mouse, camera);
-                            controls.update();
-                            camera.updateProjectionMatrix();
-                            // １回で処理を終了する
-                            this.iconIsClicked = false;
+                                    // 1.5秒後にメッセージを表示する
+                                    const openModal = () => {
+                                        this.msgBox = true;
+                                        this.msgBoxId = intersects[0].object.name;
+                                        this.submitMsgBox();
+                                    }
+                                    if(this.camera.zoom === 3) {
+                                        openModal();
+                                    } else {
+                                        setTimeout(openModal, 1500);
+                                    }
+                                    raycaster.setFromCamera(this.mouse, camera);
+                                    controls.update();
+                                    camera.updateProjectionMatrix();
+                                    // １回で処理を終了する
+                                    this.iconIsClicked = false;
+                                
+                            }}
                         }
                     }
                     }
-                })
+                    
+                )
+                
                 raycaster.setFromCamera(this.mouse, camera);
                 camera.updateProjectionMatrix();
-                controls.update();
+                controls.update()
                 
-                }
+            }
 
             
             window.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mouseup', onMouseUp);
+            window.addEventListener('touchstart', onTouchStart);
+                // SPの場合はタッチ座標取得する
+                canvas.addEventListener('touchstart', (event) => {
+                    this.mouse.x = (event.targetTouches[0].clientX / window.innerWidth) * 2 - 1;
+                    this.mouse.y = -(event.targetTouches[0].clientY / window.innerHeight) * 2 + 1;
+                    console.log(this.mouse.x, this.mouse.y);
+                    this.iconGroup.children.map((mesh) => {
+                        if(mesh.name === "icon1") {
+                            console.log(mesh.position)
+                        }
+                    })
+                })
             tick();
 
         }, 
@@ -357,8 +445,7 @@
 
                     })
                 }
-                // シーン3では操作説明
-                // シーン4で自由にシーンを回遊可能
+
             }, 
             "checkedIcon": {
                 // アイコンのチェック状態を監視
@@ -391,6 +478,59 @@
             msgBoxIsOpen(val) {
                 //  メッセージボックスが開いた時にcontrolsを無効にする
                 val === true ? this.controls.enabled = false: this.controls.enabled = true;
+            }, 
+            clickedMenuBtn(val, oldVal) {
+                console.log(val, oldVal);
+                this.iconGroup.children.map((mesh)=> {
+                    if((val && mesh.name === val) || (val ==="" && oldVal && mesh.name === oldVal)) {
+                        // アイコンをクリックした時と同様の処理を実行
+                         // 一時的にcontrolsを無効にする
+                            this.controls.enabled = false;
+                            // 目標位置を取得する
+                            let pos = new THREE.Vector3();
+                            mesh.getWorldPosition(pos);
+
+                            // 1秒でカメラを移動する
+                            gsap.to(this.controls.target, {
+                                ease: "power1.inOut",
+                                duration: 1,
+                                x: pos.x,
+                                y: pos.y,
+                                z: pos.z
+                            })
+
+                            gsap.to(this.camera.position, {
+                                ease: "power1.inOut",
+                                duration: 1,
+                                x: pos.x + 100,
+                                y: pos.y + 75,
+                                z: pos.z + 100
+                            })
+
+                            gsap.to(this.camera, {
+                                ease: "power1.inOut",
+                                duration: 1,
+                                zoom: 3
+                            })
+
+
+                            // 1.5秒後にメッセージを表示する
+                            const openModal = () => {
+                                this.msgBox = true;
+                                this.msgBoxId = mesh.name;
+                                this.submitMsgBox();
+                            }
+                            if(this.camera.zoom === 3) {
+                                openModal();
+                            } else {
+                                setTimeout(openModal, 1500);
+                            }
+                            this.raycaster.setFromCamera(this.mouse, this.camera);
+                            this.controls.update();
+                            this.camera.updateProjectionMatrix();
+                    }
+                })
+
             }
         },
     }

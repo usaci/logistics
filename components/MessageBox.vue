@@ -6,7 +6,7 @@
             }
         },
         props: {
-            msgId: Number, 
+            msgId: String, 
             title: String,
             msg: String,
             btnMsg: String,
@@ -16,14 +16,20 @@
         },
         methods: {
             closeMsgBox() {
+                // メッセージボックスを閉じる
                 this.$emit('onClose', false);
                 this.isOpenStatus = this.$props.isOpen;
             },
             openModal() {
+                // 通常のモーダルウィンドウを開く
                 if(this.$props.whereSceneIs > 2){
                     this.$emit('onOpenModal', true);
                     console.log('hello');
                 }
+            }, 
+            openControlMsgBox() {
+                // 操作説明のメッセージボックスを開く
+                this.$emit('onOpenControlMsgBox', true);
             }
         }, 
     }
@@ -32,9 +38,10 @@
     <div class="msgBox" :class="{ isOpen }">
         <h2 class="msgBox__title">{{ title }}</h2>
         <div class="msgBox__text" v-html="msg"></div>
-        <Button @click="closeMsgBox" :msg="btnMsg" v-if="backBtnMsg == ''" />
+        <!-- backBtnMsgがないとき -->
+        <Button @click="closeMsgBox" :msg="btnMsg" v-if="backBtnMsg == '' || msgId == 'intro2' " />
         <Button @click="openModal" :msg="btnMsg" v-else />
-        <Button @click="closeMsgBox" :msg="backBtnMsg" v-if="backBtnMsg" :btnIsBorder="true"/>
+        <Button @click="closeMsgBox" :msg="backBtnMsg" v-if="backBtnMsg" :btnIsBorder="true" />
     </div>
 </template>
 <style>
@@ -77,22 +84,11 @@
         margin-bottom: 2rem;
     }
 
-    .msgBox__btn {
-        background: #4466E0;
-        color: #fff;
-        font-weight: bold;
-        padding: 1rem 2rem;
-        width: 100%;
-        text-align: center;
-        margin-bottom: 1.4rem;
-    }
+    @media screen and (max-width: 768px){
 
-    .msgBox__btn.msgBox__btn-border {
-        background: transparent;
-        color: #4466E0;
-        border: solid 2px #4455E0;
-    }
-    .msgBox__btn:last-child {
-        margin-bottom: 0;
+        .msgBox {
+            width: 95%;
+        }
+        
     }
 </style>

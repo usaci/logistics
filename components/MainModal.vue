@@ -9,8 +9,9 @@
         props: {
             isOpen: Boolean,
             title: String,
+            person: String,
             quote: String, 
-            mainText: "",
+            mainText: String,
         }, 
         methods: {
             closeModal() {
@@ -32,8 +33,8 @@
                         <img src="/icons/person_ramen.png" alt="住民アイコン">
                     </figure>
                     <div>
-                        <p class="mainModal__quote-ttl">住民A</p>
-                        <p>ネット通販で食品を注文したんだけれど、いつまで経っても届かないのよね</p>
+                        <p class="mainModal__quote-ttl">{{ person }}</p>
+                        <p>{{ quote }}</p>
                     </div>
                 </div>
             </section>
@@ -65,6 +66,12 @@
     .mainModal.isOpen {
         opacity: 1;
         pointer-events: all;
+    }
+
+    @media screen and (max-width: 768px){
+        .mainModal {
+            width: 95%;
+        }
     }
 
     .mainModal .mainModal__ttl {
