@@ -47,6 +47,7 @@
                         }
                     }
                 }
+
             }
         }, 
         props: {
@@ -54,7 +55,7 @@
         },
         mounted() {
             // デフォルトの日時を定義
-            const time = new Date("2024.01.01");
+            const time = new Date("2024/01/01");
             const month = time.getMonth() + 1;
             const date = time.getDate();
 
@@ -86,15 +87,15 @@
 <template>
     <div class="date" :class="{isActive: isDateActive}">
         <p class="year">2024</p>
-        <p class="month">{{ parseInt(this.time.month) }}.{{ parseInt(this.time.date) }}(月)</p>
+        <p class="month">{{ parseInt(this.time.month).toString().padStart(2, "0") }}.{{ parseInt(this.time.date).toString().padStart(2, "0") }}</p>
     </div>
 </template>
 <style>
     .date {
         position: absolute;
         z-index: 100;
-        right: 0;
-        bottom: 0;
+        left: 0;
+        top: 0;
         font-family: 'Barlow', sans-serif;
         font-weight: bold;
         line-height: 1.2;
@@ -109,10 +110,10 @@
         background: #fff;
         width: fit-content;
         color: #4466E0;
-        font-size: 2.4rem;
+        font-size: 2.8rem;
     }
 
     .date > p:nth-of-type(2) {
-        font-size: 4.0rem;
+        font-size: 4.4rem;
     }
 </style>

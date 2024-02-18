@@ -19,6 +19,10 @@
                 // メッセージボックスを閉じる
                 this.$emit('onClose', false);
                 this.isOpenStatus = this.$props.isOpen;
+                if(this.msgId === 'intro2') {
+                    // 操作説明のメッセージボックスを開く
+                    this.$emit('onOpenControlMsgBox', true);
+                }
             },
             openModal() {
                 // 通常のモーダルウィンドウを開く
@@ -27,10 +31,6 @@
                     console.log('hello');
                 }
             }, 
-            openControlMsgBox() {
-                // 操作説明のメッセージボックスを開く
-                this.$emit('onOpenControlMsgBox', true);
-            }
         }, 
     }
 </script>

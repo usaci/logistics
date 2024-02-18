@@ -85,6 +85,7 @@
                     <p>{{ btnMsg }}</p>
                 </div>
             </div>
+            <div>操作説明</div>
         </div>
     </header>
 </template>

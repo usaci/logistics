@@ -6,11 +6,13 @@
 
     <Scene @onClick="toggleMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" :clickedMenuBtn="this.clickedMenuBtn" />
 
-    <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onClose="toggleMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" />
+    <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onClose="toggleMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" @onOpenControlMsgBox="openControlMsgBox"/>
 
     <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :person="this.modalPerson" :quote="this.modalQuote" :mainText="this.modalMsg"/>
 
     <Date :whereSceneIs="this.whereSceneIs"/>
+
+    <Control :isOpen="this.controlBoxIsOpen" @onCloseControlMsgBox="closeControlMsgBox"/>
 
     <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openThinkingModalBox" />
   </div>
@@ -20,6 +22,7 @@
   export default {
     data() {
       return {
+        isTouchDevice: Boolean,
         whereSceneIs: 0, 
         isStartHidden: false,
         msgBoxIsOpen: false,
@@ -39,6 +42,12 @@
         msgBoxMsg: String,
         msgBoxBtn: String,
         msgBoxBtnClose: String, 
+        // コントロール
+        controlBoxIsOpen: false,
+        controlBoxTitle: String,
+        controlBoxMsg: String,
+        controlBoxImg: String,
+        controlBoxScene: Number,
         // モーダルウィンドウのグループ
         modalGroup: [
           {
@@ -113,6 +122,19 @@
         clickedMenuBtn: String,
       }
     },
+    mounted() {
+      const isTouchDevice = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        console.log(userAgent);
+        if(userAgent.indexOf('iphone') !== -1 || userAgent.indexOf('ipad') !== -1 || userAgent.indexOf('android') !== -1) {
+          this.isTouchDevice = true;
+        }else {
+          this.isTouchDevice = false;
+        }
+      }
+      isTouchDevice();
+      console.log(this.isTouchDevice);
+    }, 
     methods: {
       hiddenStart() {
         // スタート画面を非表示にする
@@ -129,7 +151,6 @@
         this.msgBoxIsOpen = !this.msgBoxIsOpen;
         const [msgBoxIsOpen, msgBoxId] = args;
         this.msgBoxId = msgBoxId;
-        console.log(msgBoxId);
 
         // アイコンをクリックした際に値に応じたメッセージボックスを表示する
         this.msgGroup.map((element)=> {
@@ -186,6 +207,18 @@
       reset() {
         // 最初の画面に戻る
         window.location.reload();
+      }, 
+      openControlMsgBox() {
+        // 操作説明のメッセージボックスを開く
+        this.controlBoxScene++;
+        console.log("openControlBox");
+          this.controlBoxIsOpen = !this.controlBoxIsOpen;
+          this.controlBoxTitle = "操作方法";
+          this.controlBoxMsg = "マウスをドラッグすると、街を動かすことができます。";
+      },
+      closeControlMsgBox() {
+        // 操作説明のメッセージボックスを閉じる
+        this.controlBoxIsOpen = false;
       }
     }, 
     watch: {
