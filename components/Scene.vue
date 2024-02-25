@@ -73,7 +73,7 @@
             scene.add( camera );
             camera.position.set(deg, deg * .75, deg);
             camera.aspect = width / height;
-            camera.zoom = .1;
+            // camera.zoom = .1;
             this.camera = camera;
 
             // シーン読み込み
@@ -90,10 +90,43 @@
 
             loader.load('car_red.glb', (glb) => {
                 const car = glb.scene;
-                car.position.set(32, 1.3, -94);
+
+                // フィールドとなる平面を作成
+                const planeGeometry = new THREE.PlaneGeometry(55, 55);
+                const planeMaterial = new THREE.MeshNormalMaterial({})
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                plane.rotation.x = Math.PI/180 * -90;
+                plane.position.set(0, 1.3,0);
+
+                const attribute = planeGeometry.attributes.position;
+                //  頂点座標を取得
+                let vertices = [];
+                for (let i = 0; i < attribute.count; i++) {
+                    // 立方体の頂点座標を取得
+                    const x = attribute.getX(i);
+                    const y = attribute.getY(i);
+                    const z = attribute.getZ(i);
+                    vertices.push({x: x, y: z, z: y});
+                }
+
+                console.log(vertices);
+                // 車を平面の頂点に移動する
+                car.position.set(vertices[1].x, 1.3, vertices[1].z);
+                console.log(car.position);
+                // 車と平面をグループ化する
+                const carGroup = new THREE.Group();
+                carGroup.add(car);
+                console.log(plane);
+                scene.add(plane)
+                scene.add(carGroup);
 
                 function animate() {
                     requestAnimationFrame( animate );
+                    if(Math.abs(car.position.z ) < 27.5) {
+                        car.position.z += .1;
+                    } else {
+                        car.position.x -= 1;
+                    }
                 }
 
                 animate();
