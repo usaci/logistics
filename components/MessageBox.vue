@@ -90,8 +90,13 @@
     @media screen and (max-width: 768px){
 
         .msgBox {
-            width: 95%;
+            width: 80%;
+            padding: 3rem;
         }
-        
+
+        .msgBox__title {
+            font-size: 2.0rem;
+            margin-bottom: 1rem;
+        }
     }
 </style>

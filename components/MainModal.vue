@@ -68,12 +68,6 @@
         pointer-events: all;
     }
 
-    @media screen and (max-width: 768px){
-        .mainModal {
-            width: 95%;
-        }
-    }
-
     .mainModal .mainModal__ttl {
         font-size: 2.7rem;
         font-weight: bold;
@@ -110,5 +104,32 @@
         padding:  0.4rem 1rem;
         border-left: solid #4466E0 1rem;
         font-weight: bold;
+    }
+
+    @media screen and (max-width: 768px){
+        .mainModal {
+            width: 100%;
+            height: 100%;
+            z-index: 1002;
+            padding: 3rem;
+            overflow: scroll;
+        }
+
+        .mainModal .mainModal__ttl {
+            font-size: 2.4rem;
+        }
+        
+        .mainModal .mainModal__main {
+            max-height: 75%;
+            height: 75%;
+        }
+        .mainModal .mainModal__main h2 {
+            font-size: 1.7rem;
+            padding: 0rem 1rem;
+            background: #F1F1F1;
+            padding:  0.4rem 1rem;
+            border-left: solid #4466E0 1rem;
+            font-weight: bold;
+        }
     }
 </style>

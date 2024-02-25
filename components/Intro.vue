@@ -1,14 +1,32 @@
 <template>
     <section class="intro">
         <div class="inner">
-            <h1 class="mainTitle"><img src="/logo.png" alt="物流と私たち /"></h1>
-            <p class="subTitle">物流2024年問題について考える</p>
-            <div class="intro__text" :class="{isTextOpen: this.isTextOpen}">
-                <p>2024年より、トラック運転手をはじめとした運転業務に従事する労働者に対して、
-                    年960時間の労働時間規制が適用されることで、輸送能力の低下が予測されています。</p>
-                <p class="strong">では、具体的に何が起きるかみてみましょう</p>
+            <!-- 音量調整画面 -->
+            <div class="intro__sounds" :class="{isActive: isSoundSettingActive}">
+                <h2>はじめに</h2>
+                <p>当サイトでは音声を使用します。<br>設定後も、メニューからも切り替えが可能です。</p>
+                <div class="soundsIcons">
+                    <div class="soundsIcons__icon isSoundOn" @click="setSoundSettingOn">
+                        <img src="/icons/volumeon.png" alt="音声ON" class="soundOn">
+                        <p>音声ON</p>
+                    </div>
+                    <div class="soundsIcons__icon isSoundOff" @click="setSoundSettingOff">
+                        <img src="/icons/volumeoff.png" alt="音声OFF" class="soundOff">
+                        <p>音声OFF</p>
+                    </div>
+                </div>
             </div>
-            <Button :msg="this.btnTitle" @click="continueContent" />
+            <!-- スタート画面 -->
+            <div class="intro__main" :class="{isActive: isIntroMainActive}">
+                <h1 class="mainTitle"><img src="/logo.png" alt="物流と私たち /"></h1>
+                <p class="subTitle">物流2024年問題について考える</p>
+                <div class="intro__text" :class="{isTextOpen: this.isTextOpen}">
+                    <p>2024年より、トラック運転手をはじめとした運転業務に従事する労働者に対して、
+                        年960時間の労働時間規制が適用されることで、輸送能力の低下が予測されています。</p>
+                    <p class="strong">では、具体的に何が起きるかみてみましょう</p>
+                </div>
+                <Button :msg="this.btnTitle" @click="continueContent" />
+            </div>
         </div>
     </section>
 </template>
@@ -18,7 +36,9 @@
             return {
                 count: 0,
                 btnTitle: "はじめる",
-                isTextOpen: false
+                isTextOpen: false,
+                isSoundSettingActive: true,
+                isIntroMainActive: false,
             }
         }, 
         methods: {
@@ -33,6 +53,20 @@
                     // スタート画面を非表示にする
                     this.$emit('onClickStart', true)
                 }
+            },
+            setSoundSettingOn() {
+                // 音量をオンにする
+                this.$emit('onSetSoundSetting', true);
+                // 設定画面を非表示にする
+                this.isSoundSettingActive = !this.isSoundSettingActive;
+                this.isIntroMainActive = !this.isIntroMainActive;
+            }, 
+            setSoundSettingOff() {
+                // 音量をオフにする
+                this.$emit('onSetSoundSetting', false);
+                this.isSoundSettingActive = !this.isSoundSettingActive;
+                this.isIntroMainActive = !this.isIntroMainActive;
+
             }
         }, 
         props: {
@@ -104,5 +138,88 @@
     .intro .inner .intro__text .strong {
         font-size: 2rem;
         font-weight: bold;
+    }
+
+    /* スタート画面 */
+    .intro .inner .intro__main {
+        position: absolute;
+        opacity: 0;
+        visibility: hidden;
+        transition: .4s;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+    }
+
+    .intro .inner .intro__main.isActive {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* サウンド設定 */
+    .intro .inner .intro__sounds {
+        position: absolute;
+        opacity: 0;
+        visibility: hidden;
+        transition: .4s;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+    }
+
+    .intro .inner .intro__sounds.isActive {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .intro .inner .intro__sounds h2 {
+        font-size: 2.6rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .intro .inner .intro__sounds p {
+        margin-bottom: 3rem;
+    }
+
+    .intro .inner .intro__sounds .soundsIcons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: #4466E0;
+        gap: 30px;
+    }
+
+    .intro .inner .intro__sounds .soundsIcons .soundsIcons__icon {
+        cursor: pointer;
+    }
+    .intro .inner .intro__sounds .soundsIcons .soundsIcons__icon:hover {
+        opacity: 0.7;
+    }
+    
+    .intro .inner .intro__sounds .soundsIcons img {
+        width: 80px;
+    }
+
+    @media screen and (max-width: 768px){
+        .intro .inner {
+            width: 100%;
+            padding: 3rem;
+        }
+        .intro .inner .mainTitle img {
+            width: 100%;
+        }
+        .intro .inner .subTitle {
+            font-size: 1.7rem;
+        }
+
+        .intro .inner .intro__text {
+            font-size: 1.4rem;
+        }
+
+        .intro .inner .intro__text .strong {
+            font-size: 1.7rem;
+        }
     }
 </style>

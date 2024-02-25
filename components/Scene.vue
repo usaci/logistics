@@ -3,7 +3,7 @@
     import { gsap } from "gsap";
     import { MapControls } from 'three/addons/controls/MapControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
+    import * as YUKA from 'yuka';
     export default {
         data() {
             return {
@@ -59,6 +59,10 @@
             const scene = new THREE.Scene();
             this.scene = scene;
 
+            // AxesHelper
+            const size = 5;
+            scene.add(new THREE.AxesHelper(size));
+
             // loader
             const loader = new GLTFLoader();
 
@@ -77,9 +81,24 @@
                 const stage = glb.scene;
                 scene.add(stage);
                 stage.position.set(0, 0, 0);
-            }, undefined, (error) => {
-                console.error( error );
             })
+
+            // GridHelper
+            const gridHelper = new THREE.GridHelper(10000, 10000);
+            scene.add(gridHelper);
+
+
+            loader.load('car_red.glb', (glb) => {
+                const car = glb.scene;
+                car.position.set(32, 1.3, -94);
+
+                function animate() {
+                    requestAnimationFrame( animate );
+                }
+
+                animate();
+            })
+
 
             // light
             const light = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -98,6 +117,7 @@
             iconGroup.name = "iconGroup";
             scene.add(iconGroup);
             this.iconGroup = iconGroup;
+
 
             // ------------------------- iconを配置する
             const createIcon = (name, posX, posY, posZ) => {
@@ -191,8 +211,6 @@
             window.addEventListener('resize', () => {
                 this.w = window.innerWidth;
                 this.h = window.innerHeight;
-                console.log(this.w, this.h);
-
                 // modify camera's aspect ratio
                 renderer.setSize(this.w, this.h);
                 renderer.setPixelRatio(window.devicePixelRatio);
@@ -211,7 +229,7 @@
             controls.enabled = false;
             controls.enableRotate = true;
             controls.enableDamping = true;
-            controls.enablePan = true; // パンを有効にする
+            controls.enablePan = true;
             controls.minZoom = 1;
             controls.maxZoom = 4;
             this.controls = controls;
@@ -239,9 +257,9 @@
                 this.iconIsClicked = true;
             }
 
+            // アニメーション処理
             const tick = () => {
                 requestAnimationFrame(tick);
-
                 renderer.render(scene, camera);
                 const intersects = raycaster.intersectObjects(scene.children[3].children);
                 this.intersects = intersects;

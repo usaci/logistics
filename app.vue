@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Header :whereSceneIs="this.whereSceneIs" @onClickMenuBtn="clickMenuBtn" @onReset="reset" @onOpenControlMsgBox="reopenControlMsgBox" :controlBoxIsOpen="this.controlBoxIsOpen"/>
-    <Intro :class="{isHidden: isStartHidden}" @onClickStart="hiddenStart" />
+    <Intro :class="{isHidden: isStartHidden}" @onClickStart="hiddenStart" @onSetSoundSetting="setSoundSetting"/>
     <Scene @onClickMsgBox="openMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" :clickedMenuBtn="this.clickedMenuBtn" />
     <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onCloseMsgBox="closeMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" @onOpenControlMsgBox="openControlMsgBox"/>
     <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :quote="this.modalQuote" :mainText="this.modalMsg"/>
@@ -20,6 +20,7 @@
     data() {
       return {
         isTouchDevice: "",
+        isSoundOn: true,
         whereSceneIs: 0, 
         isStartHidden: false,
         msgBoxIsOpen: false,
@@ -150,12 +151,19 @@
         if(this.msgBoxIsOpen === false) {
           this.clickedMenuBtn = "";
         }
+        // 私たちにできることを考えるボタンを非表示にする
+        if(this.checkedIcon.length > 2) {
+          this.thinkingBtnIsOpen = true;
+        }
       },
       closeMsgBox() {
         if(this.whereSceneIs === 1) {
           this.whereSceneIs++;
         }
         this.msgBoxIsOpen = !this.msgBoxIsOpen;
+        if(this.checkedIcon.length > 2) {
+          this.thinkingBtnIsOpen = true;
+        }
       },
       openModalBox() {
           // モーダルウィンドウを表示する
@@ -171,6 +179,10 @@
               this.modalMsg = element.mainText;
             }
           })
+          if(this.checkedIcon.length > 2) {
+            this.thinkingBtnIsOpen = true;
+          }
+          console.log(document.body);    
   
       },
       closeModalBox() {
@@ -183,12 +195,18 @@
               this.checkedIcon.push(this.msgBoxId);
             }
           }
+          if(this.checkedIcon.length > 2) {
+            this.thinkingBtnIsOpen = true;
+          }
       }, 
       openThinkingModalBox () {
-          this.msgBoxIsOpen = !this.msgBoxIsOpen;
+          this.msgBoxIsOpen = false;
           this.modalIsOpen = true;
           this.modalTitle = "私たちにできること"
           this.modalMsg = "<p>これまで学んできたように、物流2024年問題は物流業界にとどまらず、私たち一般消費者の生活にも大きな影響を及ぼします。</p><p>しかし、私たちの行動を変えることによって、物流業界で働く人々の負担を減らし、物流2024年問題を解決する助けになることができます。物流2024年問題に対して私たちができることを考えてみましょう。</p><h2>指定した時間に必ず受け取ろう</h2><p>不在による再配達は、トラックドライバーの負担を大きく増加させます。荷物の受け取り時間の前後には必ず家にいるようにして、確実に荷物を受け取れるように心がけましょう。また、決まった時間で荷物を受け取るのが難しい場合は、宅配ボックスや置き配、コンビニ受け取りなどの利用も検討しましょう。</p><h2>お急ぎ便は必要な時にだけ</h2><p>最短でその日中に荷物が届くお急ぎ便。無料となるとどうしてもお急ぎ便を使いたくなりがちですが、トラックドライバーの負担を軽減するためにも、本当に必要な時だけ使うようにしましょう。</p><h2>まとめ買いで運ぶ回数を減らそう</h2><p>ネットショッピングなどで買い物をする際、まとめ買いによって注文回数を絞ることによって、配送回数を減らすことにつながります。</p>";
+
+          // ボタンを非表示にする
+          this.thinkingBtnIsOpen = false;
       }, 
       clickMenuBtn(e) {
         // Headerのナビゲーションメニューを押した時の処理
@@ -203,14 +221,27 @@
         this.msgBoxIsOpen = !this.msgBoxIsOpen;
         // 操作説明のメッセージボックスを開く
         this.controlBoxIsOpen = !this.controlBoxIsOpen;
+        if(this.checkedIcon.length > 2) {
+          this.thinkingBtnIsOpen = false;
+        }   
       },
       reopenControlMsgBox() {
         // 操作説明のメッセージボックスを再度開く
         this.controlBoxIsOpen = true;
+        if(this.checkedIcon.length > 2) {
+          this.thinkingBtnIsOpen = false;
+        }    
       }, 
       closeControlMsgBox() {
         // 操作説明のメッセージボックスを閉じる
         this.controlBoxIsOpen = false;
+        if(this.checkedIcon.length > 2) {
+          this.thinkingBtnIsOpen = true;
+        }    
+      },
+      setSoundSetting(val) {
+        this.isSoundOn = val;
+        console.log(this.isSoundOn);
       }
 
     }, 
@@ -320,6 +351,17 @@
   .clouds.isHidden img:nth-of-type(2) {
     left: 150%;
     /* top: -50%; */
+  }
+
+  @media screen and (max-width: 768px) {
+    body {
+      font-size: 1.4rem;
+    }
+
+    .toThinking {
+      width: 90%;
+      font-size: 1.7rem;
+    }
   }
 
 </style>

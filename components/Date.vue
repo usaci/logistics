@@ -87,13 +87,13 @@
 <template>
     <div class="date" :class="{isActive: isDateActive}">
         <p class="year">2024</p>
-        <p class="month">{{ parseInt(this.time.month).toString().padStart(2, "0") }}.{{ parseInt(this.time.date).toString().padStart(2, "0") }}(月)</p>
+        <p class="month">{{ parseInt(this.time.month).toString().padStart(2, "0") }}.{{ parseInt(this.time.date).toString().padStart(2, "0") }}</p>
     </div>
 </template>
 <style>
     .date {
         position: absolute;
-        z-index: 100;
+        z-index: 1;
         left: 0;
         top: 0;
         font-family: 'Barlow', sans-serif;
@@ -115,5 +115,15 @@
 
     .date > p:nth-of-type(2) {
         font-size: 4.4rem;
+    }
+
+    @media screen and (max-width: 768px) {
+        .date > p {
+            font-size: 2.4rem;
+        }
+
+        .date > p:nth-of-type(2) {
+            font-size: 3.6rem;
+        }
     }
 </style>

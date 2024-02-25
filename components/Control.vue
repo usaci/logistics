@@ -107,7 +107,9 @@
                     this.$el.style.visibility = "hidden";
                     this.$emit('onCloseControlMsgBox', false);
                     // 一旦DOMに追加したデータを削除する
-                    icon.removeChild(icon.children[1]);
+                    if(this.$props.isTouchDevice === false) {
+                        icon.removeChild(icon.children[1]);
+                    }
                 }, 7000)
                 
             }
