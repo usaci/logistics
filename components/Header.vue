@@ -8,28 +8,29 @@
                 menu: this.$el,
             }
         },
+        props: {
+            controlBoxIsOpen: Boolean,
+            HeaderIsOpen: Boolean,
+            whereSceneIs: Number
+        },
         methods: {
             toggleBtn() {
                 if(this.$props.whereSceneIs > 2) {
                     this.btnIsActive = !this.btnIsActive;
                     this.menuIsActive = !this.menuIsActive;
-                    console.log('toggle', this.btnIsActive, this.menuIsActive);
                     // menuの文言を変更する
                     this.btnIsActive === true ? this.btnMsg = "CLOSE" : this.btnMsg = "MENU";
-
                     // メニューを表示する
                     this.menuIsActive === true ? this.showMenu(): this.hideMenu();
                 }
             }, 
             clickIcon(e) {
-                if(this.menuIsActive === true ) {
-                    // idをScene.vueに渡す
-                    this.$emit('onClickMenuBtn', e.target.id);
-                    this.btnIsActive = !this.btnIsActive;
-                    this.menuIsActive = !this.menuIsActive;
-                    this.btnIsActive === true ? this.btnMsg = "CLOSE" : this.btnMsg = "MENU";
-                    this.menuIsActive === true ? this.showMenu(): this.hideMenu();
-                }
+                // idをScene.vueに渡す
+                this.$emit('onClickMenuBtn', e.target.id);
+                this.btnIsActive = !this.btnIsActive;
+                this.menuIsActive = !this.menuIsActive;
+                this.btnIsActive === true ? this.btnMsg = "CLOSE" : this.btnMsg = "MENU";
+                this.menuIsActive === true ? this.showMenu(): this.hideMenu();
             }, 
             reset() {
                 this.$emit('onReset');
@@ -51,12 +52,14 @@
                 setTimeout(()=>{
                     menu.style.display = "none";
                 }, 10);
+            },
+            showControlBox() {
+                console.log(this.$props.controlBoxIsOpen);
+                if(this.$props.controlBoxIsOpen === false) {
+                    this.$emit('onOpenControlMsgBox');
+                }
             }
          }, 
-        props: {
-            HeaderIsOpen: Boolean,
-            whereSceneIs: Number
-        }
     }
 </script>
 <template>
@@ -68,10 +71,11 @@
                     <ul class="siteHeader__nav-list">
                         <li><Button msg="また値上げ！？" :btnIsBorder="true" @click="clickIcon" id="icon1"/></li>
                         <li><Button msg="新鮮な野菜が買えなくなる？" :btnIsBorder="true" id="icon2" @click="clickIcon"/></li>
-                        <li><Button msg="スーパーマーケットの品揃えが悪くなる？" :btnIsBorder="true" id="icon3" @click="clickIcon"/></li>
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" id="icon4" @click="clickIcon"/></li>
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" id="icon5" /></li>
-                        <li><Button msg="ここにメッセージ" :btnIsBorder="true" /></li>
+                        <li><Button msg="品揃えが減る？" :btnIsBorder="true" id="icon3" @click="clickIcon"/></li>
+                        <li><Button msg="納車が最短で半年後！" :btnIsBorder="true" id="icon4" @click="clickIcon"/></li>
+                        <li><Button msg="なかなか届かない荷物" :btnIsBorder="true" id="icon5" @click="clickIcon"/></li>
+                        <li><Button msg="物流2024年問題と医療" :btnIsBorder="true" id="icon6" @click="clickIcon"/></li>
+                        <li><Button msg="製品の部品が届かない！" :btnIsBorder="true" id="icon7" @click="clickIcon"/></li>
                     </ul>
                     <Button msg="私たちにできることを考える" />
                     <button class="backToStart" @click="reset">スタート画面にもどる</button>
@@ -85,7 +89,10 @@
                     <p>{{ btnMsg }}</p>
                 </div>
             </div>
-            <div>操作説明</div>
+            <div class="siteHeader__btn siteHeader__btn-control" @click="showControlBox">
+                <div><img src="/icons/question.png" alt="操作説明" class="question"></div>
+                <span>操作説明</span>
+            </div>
         </div>
     </header>
 </template>
@@ -168,6 +175,21 @@
         top: 26px;
     }
 
+    /* 操作説明のボタン */
+    .siteHeader .siteHeader__btn.siteHeader__btn-control {
+        background: #B6B6B6;
+        right: 120px;
+        color: #fff;
+        font-size: 1.3rem;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .siteHeader .siteHeader__btn.siteHeader__btn-control img {
+        width: 25px;
+        height: auto;
+    }
+
     /* menu */
     .siteHeader #siteHeader__nav {
         display: none;
@@ -181,8 +203,9 @@
     }
 
     .siteHeader #siteHeader__nav .inner {
+        width: 70%;
+        max-width: 1200px;
         margin: 0 auto;
-        width: 50%;
         text-align: center;
         position: absolute;
         transform: translate(-50%, -50%);
@@ -205,6 +228,11 @@
 
     .siteHeader #siteHeader__nav .backToStart {
         color: #ccc;
+        transition: .2s;
+    }
+
+    .siteHeader #siteHeader__nav .backToStart:hover {
+        color: #4466E0;
     }
 
     @media screen and (max-width: 768px) {

@@ -20,7 +20,7 @@
         width: 100%;
         text-align: center;
         margin-bottom: 1.4rem;
-        transition: .4s;
+        transition: .2s;
     }
 
     .btn.btnIsBorder {
@@ -36,6 +36,5 @@
     .btn.btnIsBorder:hover {
         background: #4466E0;
         color: #fff;
-        border: none;
     }
 </style>

@@ -7,47 +7,107 @@
 スマートフォンかPCかの判定は、・・・で行う
 
 ------------------------------------------------------------ */
+    import { gsap } from "gsap";
     export default {
         data() {
             return {
                 title: String,
                 msg: String,
-                img: String,
+                imgUrl: String,
                 scene: Number,
             }
         },
         props: {
             isOpen: Boolean,
+            isTouchDevice: Boolean,
         },
         methods: {
             switchMsg() {
                 // 最初の説明
+                // spの場合
                 this.$el.style.opacity = 1;
                 this.$el.style.visibility = "visible";
                 this.title = "操作説明";
-                this.msg = "マウスをドラッグすると、街を動かすことができます。";
-                this.img = "";
+                let icon;
+                if(this.$props.isTouchDevice === true ) {
+                    // SPの場合
+                    this.msg = "画面をスワイプすると、街を動かすことができます。";
+                    this.imgUrl = "icons/finger.png";
+                    icon = this.$el.children[1];
+                }else {
+                    // PCの場合
+                    this.msg = "左ボタンをクリックしながらマウスを動かすと、街を動かすことができます。";
+                    this.imgUrl = "icons/mouse.png";
+                    icon = this.$el.children[1];
+                    const clicked = document.createElement('img');
+                    clicked.src = "icons/mouse_clicked.png";
+                    clicked.classList.add("controlBox__icon");
+                    clicked.style.position = "absolute";
+                    clicked.style.top = "0";
+                    clicked.style.left = "calc(50% - 6px)";
+                    clicked.style.transform = "translate(-50%, 0%)";
+                    gsap.to(clicked, {
+                        opacity: 0.2,
+                        duration: 1,
+                        repeat: 6,
+                    })
+                    icon.appendChild(clicked);
+                }
+
+                // SP, PC共通
+                gsap.fromTo(icon, {
+                    x: -10,
+                }, {
+                    duration: 1,
+                    x: 10,
+                    repeat: 3,
+                });
 
                 // 3秒後非表示にする
                 setTimeout(() => {
                     this.$el.style.opacity = 0;
                     this.$el.style.visibility = "hidden";
+                    icon.removeChild(icon.children[1]);
                 }, 3000)
 
                 // 4秒後に次の説明を表示する
                 setTimeout(() => {
                     this.$el.style.opacity = 1;
                     this.$el.style.visibility = "visible";
-                    this.title = "操作説明";
-                    this.msg = "アイコンをクリックすると、住民の話を聞くことができます。";
-                    this.img = "";
+                    if(this.$props.isTouchDevice === true ) {
+                        // SPの場合
+                        this.msg = "画面をピンチイン、ピンチアウトすると、街を拡大・縮小できます。";
+                        this.imgUrl = "icons/finger.png";
+                        icon = this.$el.children[1];
+                    }else {
+                        // PCの場合
+                        this.msg = "マウスホイールを上下すると、街を拡大・縮小できます。";
+                        this.imgUrl = "icons/mouse.png";
+                        icon = this.$el.children[1];
+                        // 新しいアイコンを追加する
+                        const wheel = document.createElement('img');
+                        wheel.src = "icons/mouse_wheel.png";
+                        wheel.classList.add("controlBox__icon");
+                        wheel.style.position = "absolute";
+                        wheel.style.top = "0";
+                        wheel.style.left = "calc(50% - 6px)";
+                        wheel.style.transform = "translate(-50%, 0%)";
+                        gsap.to(wheel, {
+                            y: 10,
+                            duration: .5,
+                            repeat: 6,
+                        })
+                        icon.appendChild(wheel);
+                    }
                 }, 4000);
 
                 // 7秒後再び非表示にする
                 setTimeout(() => {
                     this.$el.style.opacity = 0;
                     this.$el.style.visibility = "hidden";
-                    this.$emit('onCloseControlMsgBox');
+                    this.$emit('onCloseControlMsgBox', false);
+                    // 一旦DOMに追加したデータを削除する
+                    icon.removeChild(icon.children[1]);
                 }, 7000)
                 
             }
@@ -57,19 +117,24 @@
         }, 
         watch: {
             isOpen(val) {
-                val===true ? this.switchMsg(): "";
+                if(val === true) {
+                    this.switchMsg();
+                }
             }
         }
     }
 </script>
 <template>
-    <div class="msgBox">
-        <h2 class="msgBox__title">{{ title }}</h2>
-        <div class="msgBox__text" v-html="this.msg"></div>
+    <div class="controlBox">
+        <h2 class="controlBox__title">{{ title }}</h2>
+        <div class="controlBox__icon">
+            <img :src="this.imgUrl" :alt="this.msg" :class="this.scene" class="controlBox__icon">
+        </div>
+        <div class="controlBox__text" v-html="this.msg"></div>
     </div>
 </template>
 <style>
-    .msgBox {
+    .controlBox {
         width: 30%;
         max-width: 500px;
         position: absolute;
@@ -84,34 +149,45 @@
         pointer-events: none;
     }
 
-    .msgBox.isOpen {
+    .controlBox.isOpen {
         opacity: 1;
         pointer-events: all;
     }
 
-    .msgBox__title {
+    .controlBox__title {
         font-size: 2.6rem;
         font-weight: bold;
         margin-bottom: 2rem;
         text-align: center;
     }
 
-    .msgBox__text {
+    .controlBox__text {
         margin-bottom: 2rem;
         text-align: center;
     }
 
-    .msgBox__text p {
+    .controlBox__text p {
         text-align: left;
     }
 
-    .msgBox__personImg {
+    .controlBox__personImg {
         margin-bottom: 2rem;
     }
 
+    .controlBox__icon {
+        width: 100%;
+        margin: 0 auto 1rem;
+        transform: translateX(-7px);
+        text-align: center;
+    }
+
+    .controlBox__icon img {
+        width: 50%;
+        height: auto;
+    }
     @media screen and (max-width: 768px){
 
-        .msgBox {
+        .controlBox {
             width: 95%;
         }
         

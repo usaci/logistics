@@ -65,7 +65,7 @@
         },
         watch: {
             whereSceneIs() {
-                // timerを設定
+                // タイマーを設定
                 if(this.whereSceneIs === 1) {
                     this.isDateActive = true;
                     console.log(this.isDateActive);
@@ -87,7 +87,7 @@
 <template>
     <div class="date" :class="{isActive: isDateActive}">
         <p class="year">2024</p>
-        <p class="month">{{ parseInt(this.time.month).toString().padStart(2, "0") }}.{{ parseInt(this.time.date).toString().padStart(2, "0") }}</p>
+        <p class="month">{{ parseInt(this.time.month).toString().padStart(2, "0") }}.{{ parseInt(this.time.date).toString().padStart(2, "0") }}(月)</p>
     </div>
 </template>
 <style>

@@ -1,20 +1,17 @@
 <template>
-  <div>
-    <Header :whereSceneIs="this.whereSceneIs" @onClickMenuBtn="clickMenuBtn" @onReset="reset"/>
-
+  <div class="container">
+    <Header :whereSceneIs="this.whereSceneIs" @onClickMenuBtn="clickMenuBtn" @onReset="reset" @onOpenControlMsgBox="reopenControlMsgBox" :controlBoxIsOpen="this.controlBoxIsOpen"/>
     <Intro :class="{isHidden: isStartHidden}" @onClickStart="hiddenStart" />
-
-    <Scene @onClick="toggleMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" :clickedMenuBtn="this.clickedMenuBtn" />
-
-    <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onClose="toggleMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" @onOpenControlMsgBox="openControlMsgBox"/>
-
-    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :person="this.modalPerson" :quote="this.modalQuote" :mainText="this.modalMsg"/>
-
+    <Scene @onClickMsgBox="openMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" :clickedMenuBtn="this.clickedMenuBtn" />
+    <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onCloseMsgBox="closeMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" @onOpenControlMsgBox="openControlMsgBox"/>
+    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :quote="this.modalQuote" :mainText="this.modalMsg"/>
     <Date :whereSceneIs="this.whereSceneIs"/>
-
-    <Control :isOpen="this.controlBoxIsOpen" @onCloseControlMsgBox="closeControlMsgBox"/>
-
+    <Control :isOpen="this.controlBoxIsOpen" :isTouchDevice="this.isTouchDevice" @onCloseControlMsgBox="closeControlMsgBox"/>
     <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openThinkingModalBox" />
+    <div class="clouds">
+      <img src="/cloud_left.png" alt="">
+      <img src="/cloud_right.png" alt="">
+    </div>
   </div>
 </template>
 <script>
@@ -22,32 +19,27 @@
   export default {
     data() {
       return {
-        isTouchDevice: Boolean,
+        isTouchDevice: "",
         whereSceneIs: 0, 
         isStartHidden: false,
         msgBoxIsOpen: false,
-        msgBoxId: String, 
+        msgBoxId: "", 
         msgGroup: [
           {id: "icon1", title: "ラーメン屋店主", msg: "<img src='icons/person_ramen.png' alt='ラーメン屋店主' class='msgBox__personImg'><br><p>ごめんね、マシマシラーメン、また値上げなんだ・・・。</p>",link: "", btnMsg: "詳しく話を聞く", backBtnMsg: "とじる", },
-          {id: "icon2", title: "八百屋の客", msg: "<p>最近新鮮な野菜が見なくなった気がするんですよね・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
-          {id: "icon3", title: "タイトル3", msg: "ここにメッセージが入ります",link: "", btnMsg: "詳しくみてみる", backBtnMsg: "とじる", },
-          {id: "icon4", title: "タイトル4", msg: "ここにメッセージが入ります",link: "", btnMsg: "詳しくみてみる", backBtnMsg: "とじる", },
-          {id: "icon5", title: "タイトル5", msg: "ここにメッセージが入ります",link: "", btnMsg: "詳しくみてみる", backBtnMsg: "とじる", },
-          {id: "icon6", title: "タイトル6", msg: "ここにメッセージが入ります",link: "", btnMsg: "詳しくみてみる", backBtnMsg: "とじる", },
-          {id: "icon7", title: "タイトル7", msg: "ここにメッセージが入ります",link: "", btnMsg: "詳しくみてみる", backBtnMsg: "とじる", },
-          {id: "icon8", title: "タイトル8", msg: "<span style='color: red'>ここにメッセージが入ります</span>",link: "", btnMsg: "詳しくみてみる", backBtnMsg: "とじる", },
+          {id: "icon2", title: "八百屋の客", msg: "<img src='icons/person_customer.png' alt='八百屋の客' class='msgBox__personImg'><p>最近新鮮な野菜が見なくなった気がするんですよね・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon3", title: "スーパーの店員", msg: "<img src='icons/person_sp.png' alt='スーパー店員' class='msgBox__personImg'><p>すみません、この商品は現在品薄となっております・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon4", title: "ディーラーの営業マン", msg: "<img src='icons/person_carDealer.png' alt='ディーラーの営業マン' class='msgBox__personImg'><p>部品の調達が遅れている関係で納車は最短で半年後になりそうです。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon5", title: "住民", msg: "<img src='icons/person_resident.png' alt='住民' class='msgBox__personImg'><p>ネットショッピングの翌日配送サービスを利用したのに、なかなか荷物が届かないのよね・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon6", title: "看護師", msg: "<img src='icons/person_nurse.png' alt='看護師' class='msgBox__personImg'><p>医療器具の配達が遅れてしまって困っています。今すぐにでも必要だというのに・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon7", title: "電子機器メーカー社員", msg: "<img src='icons/person_maker.png' alt='メーカー社員' class='msgBox__personImg'><p>部品が届かないからなかなか商品を作れないよ・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
         ], // メッセージボックスのグループ
 
-        msgBoxTitle: String,
-        msgBoxMsg: String,
-        msgBoxBtn: String,
-        msgBoxBtnClose: String, 
+        msgBoxTitle: "",
+        msgBoxMsg: "",
+        msgBoxBtn: "",
+        msgBoxBtnClose: "", 
         // コントロール
         controlBoxIsOpen: false,
-        controlBoxTitle: String,
-        controlBoxMsg: String,
-        controlBoxImg: String,
-        controlBoxScene: Number,
         // モーダルウィンドウのグループ
         modalGroup: [
           {
@@ -65,64 +57,58 @@
             title: "新鮮な野菜が買えなくなる？",
             person: "八百屋の客",
             quote: "最近新鮮な野菜が見なくなった気がするんですよね・・・。",
-            mainText: "<p>こちらは街に昔からある八百屋さんです。<br>以前に比べて新鮮な野菜が買いにくくなってしまっているようです。</p><h2>なぜ新鮮な野菜が手に入らないのか</h2><p>物流2024年問題はトラックドライバーの働き方から端を発する問題です。<br>これまで長時間労働が当たり前だったトラックドライバーの待遇改善が見込まれる一方で、時間の制約から長距離の輸送が難しくなることが懸念されています。</p><p>野菜や肉、魚といった生鮮食品は産地から長距離の輸送を経て私たちの元に届きます。長距離輸送が難しくなることによって、鮮度を良い食品が以前よりも買いにくくなることが予想されます。</p>",
+            mainText: "<p>こちらは街に昔からある八百屋さんです。<br>以前に比べて新鮮な野菜が買いにくくなってしまっているようです。</p><h2>なぜ新鮮な野菜が手に入らないのか</h2><p>物流2024年問題はトラックドライバーの働き方から端を発する問題です。<br>これまで長時間労働が当たり前だったトラックドライバーの待遇改善が見込まれる一方で、時間の制約から長距離の輸送が難しくなることが懸念されています。</p><p>野菜や肉、魚といった生鮮食品は産地から長距離の輸送を経て私たちの元に届きます。長距離輸送が難しくなることによって、鮮度を良い食品を手に入れにくくなることが考えられます。</p>",
           },
           {
             id: "modal3", 
             from: "icon3",
-            title: "スーパーマーケットの品揃えが減る？",
+            title: "品揃えが減る？",
             quote: "ここに引用が入ります",
-            mainText: "<p>この街を代表する大型スーパーです。最近品揃えが悪くなったという声が街で聞かれるようになりました。</p><h2>品薄のわけ</h2><p>トラックドライバーの働き方改革によって、一人当たりの労働時間が減少します。</p>",
+            mainText: "<p>この街を代表する大型スーパーです。最近品揃えが悪くなったという声が街で聞かれるようになりました。</p><h2>品揃えが少なくなる理由</h2><p>トラックドライバーの働き方改革によって、一人当たりの労働時間が減少します。労働時間の減少に伴う輸送効率の低下や、長距離輸送が難しくなることによって、スーパーマーケットなどの小売店の品揃えに影響が出る恐れがあります。</p>",
           },
           {
             id: "modal4", 
             from: "icon4",
-            title: "ここにタイトルが入ります",
+            title: "納車が最短で半年後！",
             quote: "ここに引用が入ります",
-            mainText: "ここに本文が入ります",
+            mainText: "<p>ついに憧れのマイカーを購入！・・・のはずが、納車はまさかの半年後・・・。</p><h2>物流2024年問題と部品輸送</h2><p>トラックドライバーの働き方改革によって、製品の製造に必要な部品の輸送が滞る恐れがあります。<br>これにより、メーカー側でも納期通りに部品を手に入れることができなくなり、その結果として製品の製造にも遅延が生じる可能性が指摘されています。</p>",
           },
           {
             id: "modal5", 
             from: "icon5",
-            title: "ここにタイトルが入ります",
+            title: "なかなか届かない荷物",
             quote: "ここに引用が入ります",
-            mainText: "ここに本文が入ります",
+            mainText: "<p>いつでも、どこでも買い物ができて便利なネットショッピング。ただ、以前よりも配送に時間がかかっているみたいです。</p><h2>物流サービスの低下</h2><p>トラックドライバーの労働時間が減少することで、以前よりも1日あたりの輸送回数が減少します。1日あたりの輸送頻度が少なくなることで、翌日配送やお急ぎ便のような従来通りの輸送サービスが受けにくくなることが予想されているのです。</p>",
           },
           {
             id: "modal6", 
             from: "icon6",
-            title: "ここにタイトルが入ります",
+            title: "物流2024年問題と医療",
             quote: "ここに引用が入ります",
-            mainText: "ここに本文が入ります",
+            mainText: "<p>物流2024年問題は医療にも影響を及ぼす恐れがあります。</p><h2>医療機器の流通に悪影響</h2><p>トラックドライバーの働き方改革によって、輸送サービスの品質低下が懸念されています。<br>医療機器の配送遅延が生じ、本来であれば受けられるはずの患者の治療が遅れてしまう恐れがあります。</p><h2>過疎地域の医療格差が深刻化</h2><p>過疎地域では都市部と比べて物流が不安定になり、医療機器の配送がより困難になることが予想されます。これにより、都市部と過疎地域の医療格差が深刻化する恐れがあるのです。</p><cite>参考：https://www.mhlw.go.jp/content/10807000/001154230.pdf</cite>",
           },
           {
             id: "modal7", 
             from: "icon7",
-            title: "modal7 ここにタイトルが入ります",
+            title: "製品の部品が届かない！",
             quote: "<p>ここに引用が入ります</p>",
             mainText: "ここに本文が入ります",
           },
-          {
-            id: "modal8", 
-            from: "icon8",
-            title: "ここにタイトルが入ります",
-            quote: "ここに引用が入ります",
-            mainText: "ここに本文が入ります",
-          },
-
         ], 
         modalIsOpen: false,
-        modalId: String,
-        modalFrom: String,
-        modalTitle: String,
-        modalQuote: String,
-        modalMsg: String,
+        modalId: "",
+        modalFrom: "",
+        modalTitle: "",
+        modalQuote: "",
+        modalMsg: "",
         checkedIcon: [],
         thinkingBtnIsOpen: false,
-        clickedMenuBtn: String,
+        clickedMenuBtn: "",
+        maskCloud: "",
       }
     },
     mounted() {
+      // デバイスを判定する
       const isTouchDevice = () => {
         const userAgent = window.navigator.userAgent.toLowerCase();
         console.log(userAgent);
@@ -133,7 +119,11 @@
         }
       }
       isTouchDevice();
-      console.log(this.isTouchDevice);
+
+      // 雲のテクスチャを取得する
+      const clouds = this.$el.children[8];
+      this.maskCloud = clouds;
+      console.log(clouds.children[0]);
     }, 
     methods: {
       hiddenStart() {
@@ -141,18 +131,13 @@
         this.isStartHidden = true;
         this.whereSceneIs++;
       },
-      toggleMsgBox(...args) {
-        // シーン1では、閉じるボタンを押すと時間経過のトリガーになる
-        if(this.whereSceneIs === 1) {
-          this.whereSceneIs++;
-        }
-
+      openMsgBox(...args) {
         // メッセージボックスを表示する
-        this.msgBoxIsOpen = !this.msgBoxIsOpen;
         const [msgBoxIsOpen, msgBoxId] = args;
+        this.msgBoxIsOpen = msgBoxIsOpen;
         this.msgBoxId = msgBoxId;
 
-        // アイコンをクリックした際に値に応じたメッセージボックスを表示する
+        // シーンのアイコンをクリックした際に値に応じたメッセージボックスを表示する
         this.msgGroup.map((element)=> {
           if(element.id === this.msgBoxId) {
             this.msgBoxTitle = element.title;
@@ -165,6 +150,12 @@
         if(this.msgBoxIsOpen === false) {
           this.clickedMenuBtn = "";
         }
+      },
+      closeMsgBox() {
+        if(this.whereSceneIs === 1) {
+          this.whereSceneIs++;
+        }
+        this.msgBoxIsOpen = !this.msgBoxIsOpen;
       },
       openModalBox() {
           // モーダルウィンドウを表示する
@@ -202,31 +193,35 @@
       clickMenuBtn(e) {
         // Headerのナビゲーションメニューを押した時の処理
         this.clickedMenuBtn = e;
-        console.log(e);
       }, 
       reset() {
         // 最初の画面に戻る
         window.location.reload();
       }, 
       openControlMsgBox() {
+        // メッセージボックスを非表示
+        this.msgBoxIsOpen = !this.msgBoxIsOpen;
         // 操作説明のメッセージボックスを開く
-        this.controlBoxScene++;
-        console.log("openControlBox");
-          this.controlBoxIsOpen = !this.controlBoxIsOpen;
-          this.controlBoxTitle = "操作方法";
-          this.controlBoxMsg = "マウスをドラッグすると、街を動かすことができます。";
+        this.controlBoxIsOpen = !this.controlBoxIsOpen;
       },
+      reopenControlMsgBox() {
+        // 操作説明のメッセージボックスを再度開く
+        this.controlBoxIsOpen = true;
+      }, 
       closeControlMsgBox() {
         // 操作説明のメッセージボックスを閉じる
         this.controlBoxIsOpen = false;
       }
+
     }, 
     watch: {
       whereSceneIs(count) {
-        console.log(count);
         if(count === 1) {
           // シーン1: ダイアログを表示し、時間経過を表す
+            // 雲のトランジションを開始
+            this.maskCloud.classList.add('isHidden');
           setTimeout(()=>{
+            // メッセージを表示
             this.msgBoxId = "intro1";
             this.msgBoxIsOpen = !this.msgBoxIsOpen;
             this.msgBoxTitle = "はじめに";
@@ -294,4 +289,37 @@
   .toThinking.isOpen {
     display: block;
   }
+
+  .clouds {
+    position: fixed;
+    pointer-events: none;
+    user-select: none;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+  }
+
+  .clouds img {
+    transition: ease-out 3.0s;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+  }
+
+  .clouds.isHidden img:nth-of-type(1) {
+    left: -50%;
+    /* top: 150%; */
+  }
+
+  .clouds.isHidden img:nth-of-type(2) {
+    left: 150%;
+    /* top: -50%; */
+  }
+
 </style>

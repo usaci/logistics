@@ -18,7 +18,7 @@
             return {
                 count: 0,
                 btnTitle: "はじめる",
-                istextOpen: false
+                isTextOpen: false
             }
         }, 
         methods: {
@@ -51,7 +51,7 @@
         transform: translate(-50%, 0%);
         top: 0%;
         left: 50%;
-        z-index: 999;
+        z-index: 1001;
         background: white;
         font-size: 1.6rem;
         text-align: center;

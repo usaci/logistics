@@ -1,5 +1,5 @@
 <script>
-    import * as THREE from 'three';
+    import * as THREE from "three";
     import { gsap } from "gsap";
     import { MapControls } from 'three/addons/controls/MapControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -14,6 +14,7 @@
                 msgBoxId: "",
                 iconGroup: Object,
                 iconIsClicked: false,
+                maskCloudGroup: Array,
             }
         },
         props: {
@@ -26,7 +27,7 @@
         methods: {
             submitMsgBox() {
                 // どのメッセージボックスを表示するのかを親コンポーネントに送信する
-                this.$emit('onClick', this.msgBox, this.msgBoxId);
+                this.$emit('onClickMsgBox', this.msgBox, this.msgBoxId);
             }, 
         }, 
         mounted() {
@@ -46,6 +47,7 @@
 
             this.renderer = renderer;
 
+            // 画面サイズの設定
             const width = this.w;
             const height = this.h;
 
@@ -57,19 +59,20 @@
             const scene = new THREE.Scene();
             this.scene = scene;
 
+            // loader
+            const loader = new GLTFLoader();
+
             // camera
             const cameraOffset = .17;
             const deg = 100;
-            const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -1000, 1000, 1000);
+            const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -10000, 10000, 1000);
             scene.add( camera );
             camera.position.set(deg, deg * .75, deg);
             camera.aspect = width / height;
             camera.zoom = .1;
             this.camera = camera;
 
-
-            // loader
-            const loader = new GLTFLoader();
+            // シーン読み込み
             loader.load('stage.glb', (glb) => {
                 const stage = glb.scene;
                 scene.add(stage);
@@ -84,14 +87,9 @@
             light.position.set(100, 100, 0);
             this.light = light;
 
-            // // lightHelper
-            // const lightHelper = new THREE.DirectionalLightHelper( light, 5 );
-            // // scene.add(lightHelper);
-
             // ambient
             const ambient = new THREE.AmbientLight(0xffffff, 2.5);
             scene.add(ambient);
-
 
             // ------------------------- ここからiconを配置する
 
@@ -126,23 +124,22 @@
             // 1つ目　ラーメン屋
             createIcon("icon1", 14, 15, 58);
 
-            // // 2つ目　八百屋
+            // 2つ目　八百屋
             createIcon("icon2", 14, 15, 75);   
 
-            // // 4つ目 スーパーマーケット
+            // 3つ目 スーパーマーケット
             createIcon("icon3", -73, 15, 60);
 
-            // // 5つ目 カーディーラー
+            // 4つ目 カーディーラー
             createIcon("icon4", 52, 15, 60);
 
-            // // 6つ目 住宅街
+            // 5つ目 住宅街
             createIcon("icon5", 61, 15, 0); 
 
-
-            // // 7つ目 病院
+            // 6つ目 病院
             createIcon("icon6", 50, 25, -60);   
 
-            // // 8つ目 メーカー
+            // 7つ目 メーカー
             createIcon("icon7", -60, 55, 0);
 
 
@@ -212,9 +209,11 @@
             const controls = new MapControls( camera, canvas );
             controls.target.set(0, 0, 0);
             controls.enabled = false;
-            controls.enableRotate = false;
+            controls.enableRotate = true;
             controls.enableDamping = true;
             controls.enablePan = true; // パンを有効にする
+            controls.minZoom = 1;
+            controls.maxZoom = 4;
             this.controls = controls;
 
             // rayCaster
@@ -230,16 +229,14 @@
                 this.iconIsClicked = true; // マウスが押されたときにフラグを設定]
             }
 
+            // マウス制御
             const onMouseUp = () => {
                 this.iconIsClicked = false; // マウスが離されたときにフラグをリセット
             }
 
+            // タッチ制御
             const onTouchStart = () => {
                 this.iconIsClicked = true;
-            }
-
-            const onTouchEnd = () => {
-                this.iconIsClicked = false;
             }
 
             const tick = () => {
@@ -336,8 +333,7 @@
                             })
                             if(intersects.length > 0 && intersects[0].object === mesh && this.modalIsOpen === false && this.msgBoxIsOpen === false) {
                                 if(this.iconIsClicked) {
-                                    // 一時的にcontrolsを無効にする
-                                                    console.log(intersects.length)
+                                    // アイコンをクリックした後は一時的にcontrolsを無効にする
                                     this.controls.enabled = false;
                                     // 目標位置を取得する
                                     let pos = new THREE.Vector3();
@@ -387,15 +383,13 @@
                         }
                     }
                     }
-                    
                 )
-                
+                // レイキャスターを更新する
                 raycaster.setFromCamera(this.mouse, camera);
+                // カメラ更新する
                 camera.updateProjectionMatrix();
                 controls.update()
-                
             }
-
             
             window.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mouseup', onMouseUp);
@@ -412,7 +406,6 @@
                     })
                 })
             tick();
-
         }, 
         watch: {
             whereSceneIs(val) {
@@ -512,7 +505,6 @@
                                 duration: 1,
                                 zoom: 3
                             })
-
 
                             // 1.5秒後にメッセージを表示する
                             const openModal = () => {

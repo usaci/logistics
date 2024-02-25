@@ -17,31 +17,34 @@
         methods: {
             closeMsgBox() {
                 // メッセージボックスを閉じる
-                this.$emit('onClose', false);
-                this.isOpenStatus = this.$props.isOpen;
-                if(this.msgId === 'intro2') {
-                    // 操作説明のメッセージボックスを開く
-                    this.$emit('onOpenControlMsgBox', true);
-                }
+                this.$emit('onCloseMsgBox', false);
+                this.isOpenStatus = false;
+                console.log('close');
+            },
+            openControlBox() {
+                // 操作説明のメッセージボックスを開く
+                this.$emit('onOpenControlMsgBox', true);
+                // このメッセージボックスは閉じる
+                this.isOpenStatus = false;
             },
             openModal() {
                 // 通常のモーダルウィンドウを開く
                 if(this.$props.whereSceneIs > 2){
                     this.$emit('onOpenModal', true);
-                    console.log('hello');
                 }
             }, 
         }, 
     }
 </script>
 <template>
-    <div class="msgBox" :class="{ isOpen }">
+    <div class="msgBox" :class="{ isOpen: isOpen }">
         <h2 class="msgBox__title">{{ title }}</h2>
         <div class="msgBox__text" v-html="msg"></div>
         <!-- backBtnMsgがないとき -->
         <Button @click="closeMsgBox" :msg="btnMsg" v-if="backBtnMsg == '' || msgId == 'intro2' " />
         <Button @click="openModal" :msg="btnMsg" v-else />
-        <Button @click="closeMsgBox" :msg="backBtnMsg" v-if="backBtnMsg" :btnIsBorder="true" />
+        <Button @click="openControlBox" :msg="backBtnMsg" v-if="(backBtnMsg && msgId =='intro2')" :btnIsBorder="true" />
+        <Button @click="closeMsgBox" :msg="backBtnMsg" v-else-if="backBtnMsg" :btnIsBorder="true" />
     </div>
 </template>
 <style>
