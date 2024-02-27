@@ -3,7 +3,6 @@
     import { gsap } from "gsap";
     import { MapControls } from 'three/addons/controls/MapControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import * as YUKA from 'yuka';
     export default {
         data() {
             return {
@@ -23,6 +22,8 @@
             checkedIcon: Array,
             modalIsOpen: Boolean,
             clickedMenuBtn: String,
+            isSoundOn: Boolean,
+            isTouchDevice: Boolean
         },
         methods: {
             submitMsgBox() {
@@ -71,11 +72,11 @@
             const deg = 100;
             const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -10000, 10000, 1000);
             scene.add( camera );
-            // camera.position.set(deg, deg * .75, deg);
-            camera.position.set(0, deg * .75, 0);
+            camera.position.set(deg, deg * .75, deg);
+            // camera.position.set(0, deg * .75, 0);
             camera.aspect = width / height;
-            // camera.zoom = .1;
-            camera.zoom = 0.8;
+            camera.zoom = .1;
+            // camera.zoom = 0.8;
             this.camera = camera;
 
             // シーン読み込み
@@ -85,79 +86,7 @@
                 stage.position.set(0, 0, 0);
             })
 
-            // GridHelper
-            const gridHelper = new THREE.GridHelper(10000, 10000);
-            scene.add(gridHelper);
-
-
-            loader.load('car_red.glb', (glb) => {
-                const car = glb.scene;
-
-                //  平面の頂点座標を取得
-                const vertices = new Float32Array([
-                    -86, 1, 86,
-                    -33, 1, 86,
-                    27, 1, 86,
-                    87, 1, 86,
-                    147, 1, 86,
-
-                    147, 1, 33,
-                    87, 1, 33,
-                    27, 1, 33,
-                    -33, 1, 33,
-                    -86, 1, 33,
-
-                    -86, 1, -27,
-                    -33, 1, -27,
-                    27, 1, -27,
-                    87, 1, -27,
-                    147, 1, -27,
-                    
-                ]);
-
-                //バッファーオブジェクトの生成
-                const geometry = new THREE.BufferGeometry();
-                    
-                //バッファーオブジェクトのattributeに頂点座標を設定
-                geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices, 3));
-                
-                const material = new THREE.PointsMaterial({
-                // 一つ一つのサイズ
-                size: 10,
-                // 色
-                color: 0xff0000,
-                });
-                const mesh = new THREE.Line(geometry,material);
-                scene.add(mesh);
-
-                console.log(mesh);
-
-                // 車を平面の頂点にセットする
-                car.position.set(vertices[0], 1.3, vertices[2]);
-                scene.add(car);
-
-                // 車を目標位置に向かって移動させる
-                let currentVertexIndex = 0;
-                let nextVertexIndex = currentVertexIndex + 3;
-                const animate = () => {
-                    requestAnimationFrame( animate );
-                    const currentPos = new THREE.Vector3().copy(car.position);
-                    const nextPos = new THREE.Vector3(vertices[nextVertexIndex], 1.3, vertices[nextVertexIndex + 2]);
-                    // 車が次の頂点に到達したかチェック
-                    if(currentPos.distanceTo(nextPos) < 0.1) {
-                        currentVertexIndex = nextVertexIndex;
-                        nextVertexIndex = currentVertexIndex + 3;
-                        if(nextVertexIndex >= vertices.length) {
-                            nextVertexIndex = currentVertexIndex - 3;
-                        }
-                    } else {
-                        car.position.lerp(nextPos, 0.4);
-                    }
-                }
-
-                animate();
-            })
-
+            
 
             // light
             const light = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -321,9 +250,8 @@
                 iconGroup.children.map((mesh) => {
                     // シーン3以降で有効になる
                     if(this.whereSceneIs > 2) {
-
                         // PCの場合
-                        if((window.matchMedia('(min-width: 768px)').matches)) {
+                        if(this.$props.isTouchDevice === false) {
                             // マウスカーソルの状態変化
                             intersects.length > 0 && this.msgBoxIsOpen === false ? document.body.style.cursor = "pointer" : document.body.style.cursor = "initial"; 
                             
@@ -334,7 +262,7 @@
                                     y: +1.2,
                                     z: +1.2
                                 });
-    
+                            console.log(mesh);
                             }else {
                                 gsap.to(mesh.scale, {
                                     duration: .4,
@@ -502,8 +430,10 @@
                                 z: +1.0
                             })
                             // 音を鳴らす
-                            const sound = new Audio('sounds/icon.mp3');
-                            sound.play();
+                            if(this.$props.isSoundOn === true) {
+                                const sound = new Audio('sounds/icon.mp3');
+                                sound.play();
+                            }
                         }
                         setTimeout(appearIcon, random);
 
@@ -529,7 +459,11 @@
                                 iconTextureChecked.encoding = THREE.sRGBEncoding;
                                 mesh.material.map = iconTextureChecked;
                             }, 500);
-   
+                            // 音を鳴らす
+                            if(this.$props.isSoundOn === true) {
+                                const checkedSound = new Audio('sounds/checked.mp3');                           const sound = new Audio('sounds/icon.mp3');
+                                checkedSound.play();                        
+                            }
                         }
                     })
                 },
