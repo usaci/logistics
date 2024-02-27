@@ -71,9 +71,11 @@
             const deg = 100;
             const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -10000, 10000, 1000);
             scene.add( camera );
-            camera.position.set(deg, deg * .75, deg);
+            // camera.position.set(deg, deg * .75, deg);
+            camera.position.set(0, deg * .75, 0);
             camera.aspect = width / height;
             // camera.zoom = .1;
+            camera.zoom = 0.8;
             this.camera = camera;
 
             // シーン読み込み
@@ -91,41 +93,65 @@
             loader.load('car_red.glb', (glb) => {
                 const car = glb.scene;
 
-                // フィールドとなる平面を作成
-                const planeGeometry = new THREE.PlaneGeometry(55, 55);
-                const planeMaterial = new THREE.MeshNormalMaterial({})
-                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.rotation.x = Math.PI/180 * -90;
-                plane.position.set(0, 1.3,0);
+                //  平面の頂点座標を取得
+                const vertices = new Float32Array([
+                    -86, 1, 86,
+                    -33, 1, 86,
+                    27, 1, 86,
+                    87, 1, 86,
+                    147, 1, 86,
 
-                const attribute = planeGeometry.attributes.position;
-                //  頂点座標を取得
-                let vertices = [];
-                for (let i = 0; i < attribute.count; i++) {
-                    // 立方体の頂点座標を取得
-                    const x = attribute.getX(i);
-                    const y = attribute.getY(i);
-                    const z = attribute.getZ(i);
-                    vertices.push({x: x, y: z, z: y});
-                }
+                    147, 1, 33,
+                    87, 1, 33,
+                    27, 1, 33,
+                    -33, 1, 33,
+                    -86, 1, 33,
 
-                console.log(vertices);
-                // 車を平面の頂点に移動する
-                car.position.set(vertices[1].x, 1.3, vertices[1].z);
-                console.log(car.position);
-                // 車と平面をグループ化する
-                const carGroup = new THREE.Group();
-                carGroup.add(car);
-                console.log(plane);
-                scene.add(plane)
-                scene.add(carGroup);
+                    -86, 1, -27,
+                    -33, 1, -27,
+                    27, 1, -27,
+                    87, 1, -27,
+                    147, 1, -27,
+                    
+                ]);
 
-                function animate() {
+                //バッファーオブジェクトの生成
+                const geometry = new THREE.BufferGeometry();
+                    
+                //バッファーオブジェクトのattributeに頂点座標を設定
+                geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices, 3));
+                
+                const material = new THREE.PointsMaterial({
+                // 一つ一つのサイズ
+                size: 10,
+                // 色
+                color: 0xff0000,
+                });
+                const mesh = new THREE.Line(geometry,material);
+                scene.add(mesh);
+
+                console.log(mesh);
+
+                // 車を平面の頂点にセットする
+                car.position.set(vertices[0], 1.3, vertices[2]);
+                scene.add(car);
+
+                // 車を目標位置に向かって移動させる
+                let currentVertexIndex = 0;
+                let nextVertexIndex = currentVertexIndex + 3;
+                const animate = () => {
                     requestAnimationFrame( animate );
-                    if(Math.abs(car.position.z ) < 27.5) {
-                        car.position.z += .1;
+                    const currentPos = new THREE.Vector3().copy(car.position);
+                    const nextPos = new THREE.Vector3(vertices[nextVertexIndex], 1.3, vertices[nextVertexIndex + 2]);
+                    // 車が次の頂点に到達したかチェック
+                    if(currentPos.distanceTo(nextPos) < 0.1) {
+                        currentVertexIndex = nextVertexIndex;
+                        nextVertexIndex = currentVertexIndex + 3;
+                        if(nextVertexIndex >= vertices.length) {
+                            nextVertexIndex = currentVertexIndex - 3;
+                        }
                     } else {
-                        car.position.x -= 1;
+                        car.position.lerp(nextPos, 0.4);
                     }
                 }
 
@@ -176,22 +202,16 @@
 
             // 1つ目　ラーメン屋
             createIcon("icon1", 14, 15, 58);
-
             // 2つ目　八百屋
             createIcon("icon2", 14, 15, 75);   
-
             // 3つ目 スーパーマーケット
             createIcon("icon3", -73, 15, 60);
-
             // 4つ目 カーディーラー
             createIcon("icon4", 52, 15, 60);
-
             // 5つ目 住宅街
             createIcon("icon5", 61, 15, 0); 
-
             // 6つ目 病院
             createIcon("icon6", 50, 25, -60);   
-
             // 7つ目 メーカー
             createIcon("icon7", -60, 55, 0);
 
@@ -263,8 +283,8 @@
             controls.enableRotate = true;
             controls.enableDamping = true;
             controls.enablePan = true;
-            controls.minZoom = 1;
-            controls.maxZoom = 4;
+            // controls.minZoom = 1;
+            // controls.maxZoom = 4;
             this.controls = controls;
 
             // rayCaster
