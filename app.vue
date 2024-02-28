@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <Header :whereSceneIs="this.whereSceneIs" @onClickMenuBtn="clickMenuBtn" @onReset="reset" @onOpenControlMsgBox="reopenControlMsgBox" :controlBoxIsOpen="this.controlBoxIsOpen"/>
+    <Header :whereSceneIs="this.whereSceneIs" @onClickMenuBtn="clickMenuBtn" @onReset="reset" @onOpenControlMsgBox="reopenControlMsgBox" :controlBoxIsOpen="this.controlBoxIsOpen" @onSetSoundSetting="setSoundSetting" :isSoundOn="this.isSoundOn" :checkedIconLength="this.checkedIcon.length"/>
     <Intro :class="{isHidden: isStartHidden}" @onClickStart="hiddenStart" @onSetSoundSetting="setSoundSetting"/>
-    <Scene @onClickMsgBox="openMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" :clickedMenuBtn="this.clickedMenuBtn" :isSoundOn="this.isSoundOn"/>
-    <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onCloseMsgBox="closeMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" @onOpenControlMsgBox="openControlMsgBox"/>
-    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :quote="this.modalQuote" :mainText="this.modalMsg"/>
+    <Scene :isTouchDevice="this.isTouchDevice" @onClickMsgBox="openMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" :clickedMenuBtn="this.clickedMenuBtn" :isSoundOn="this.isSoundOn"/>
+    <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onCloseMsgBox="closeMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" @onOpenControlMsgBox="openControlMsgBox" :imgLink="this.msgBoxImgLink" />
+    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :person="this.modalPerson" :imgLink="this.modalImgLink" :quote="this.modalQuote" :mainText="this.modalMsg"/>
     <Date :whereSceneIs="this.whereSceneIs"/>
     <Control :isOpen="this.controlBoxIsOpen" :isTouchDevice="this.isTouchDevice" @onCloseControlMsgBox="closeControlMsgBox"/>
     <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openThinkingModalBox" />
@@ -26,16 +26,18 @@
         msgBoxIsOpen: false,
         msgBoxId: "", 
         msgGroup: [
-          {id: "icon1", title: "ラーメン屋店主", msg: "<img src='icons/person_ramen.png' alt='ラーメン屋店主' class='msgBox__personImg'><br><p>ごめんね、マシマシラーメン、また値上げなんだ・・・。</p>",link: "", btnMsg: "詳しく話を聞く", backBtnMsg: "とじる", },
-          {id: "icon2", title: "八百屋の客", msg: "<img src='icons/person_customer.png' alt='八百屋の客' class='msgBox__personImg'><p>最近新鮮な野菜が見なくなった気がするんですよね・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
-          {id: "icon3", title: "スーパーの店員", msg: "<img src='icons/person_sp.png' alt='スーパー店員' class='msgBox__personImg'><p>すみません、この商品は現在品薄となっております・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
-          {id: "icon4", title: "ディーラーの営業マン", msg: "<img src='icons/person_carDealer.png' alt='ディーラーの営業マン' class='msgBox__personImg'><p>部品の調達が遅れている関係で納車は最短で半年後になりそうです。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
-          {id: "icon5", title: "住民", msg: "<img src='icons/person_resident.png' alt='住民' class='msgBox__personImg'><p>ネットショッピングの翌日配送サービスを利用したのに、なかなか荷物が届かないのよね・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
-          {id: "icon6", title: "看護師", msg: "<img src='icons/person_nurse.png' alt='看護師' class='msgBox__personImg'><p>医療器具の配達が遅れてしまって困っています。今すぐにでも必要だというのに・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
-          {id: "icon7", title: "電子機器メーカー社員", msg: "<img src='icons/person_maker.png' alt='メーカー社員' class='msgBox__personImg'><p>部品が届かないからなかなか商品を作れないよ・・・。</p>",link: "", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon1", title: "ラーメン屋店主", msg: "ごめんね、マシマシラーメン、また値上げなんだ・・・。",imgLink: "icons/person_ramen.png", btnMsg: "詳しく話を聞く", backBtnMsg: "とじる", },
+          {id: "icon2", title: "八百屋の客", msg: "最近新鮮な野菜が見なくなった気がするんですよね・・・。",imgLink: "icons/person_customer.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon3", title: "スーパーの店員", msg: "すみません、この商品は現在品薄となっております・・・。",imgLink: "icons/person_sp.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon4", title: "ディーラーの営業マン", msg: "部品の調達が遅れている関係で納車は最短で半年後になりそうです。",imgLink: "icons/person_carDealer.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon5", title: "住民", msg: "ネットショッピングの翌日配送サービスを利用したのに、なかなか荷物が届かないのよね・・・。",imgLink: "icons/person_resident.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon6", title: "看護師", msg: "医療器具の配達が遅れてしまって困っています。今すぐにでも必要だというのに・・・。",imgLink: "icons/person_nurse.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon7", title: "電子機器メーカー社員", msg: "部品が届かないからなかなか商品を作れないよ・・・。",imgLink: "icons/person_maker.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
         ], // メッセージボックスのグループ
 
         msgBoxTitle: "",
+        msgBoxPerson: "",
+        msgBoxImgLink: "",
         msgBoxMsg: "",
         msgBoxBtn: "",
         msgBoxBtnClose: "", 
@@ -102,6 +104,7 @@
         modalTitle: "",
         modalQuote: "",
         modalMsg: "",
+        modalImgLink: "",
         checkedIcon: [],
         thinkingBtnIsOpen: false,
         clickedMenuBtn: "",
@@ -119,12 +122,14 @@
           this.isTouchDevice = false;
         }
       }
+      // 実行
       isTouchDevice();
 
       // 雲のテクスチャを取得する
       const clouds = this.$el.children[8];
       this.maskCloud = clouds;
       console.log(clouds.children[0]);
+
     }, 
     methods: {
       hiddenStart() {
@@ -141,10 +146,12 @@
         // シーンのアイコンをクリックした際に値に応じたメッセージボックスを表示する
         this.msgGroup.map((element)=> {
           if(element.id === this.msgBoxId) {
-            this.msgBoxTitle = element.title;
+            this.msgBoxPerson = element.title;
+            this.msgBoxTitle = this.msgBoxPerson + "が話をしています";
             this.msgBoxMsg = element.msg;
             this.msgBoxBtn = element.btnMsg;
             this.msgBoxBtnClose = "とじる";
+            this.msgBoxImgLink = element.imgLink;
           }
         })
 
@@ -165,20 +172,24 @@
           this.thinkingBtnIsOpen = true;
         }
       },
-      openModalBox() {
+      openModalBox(val) {
           // モーダルウィンドウを表示する
           this.msgBoxIsOpen = !this.msgBoxIsOpen;
           this.modalIsOpen = true;
+
           // 値に応じたモーダルウィンドウを表示
           this.modalGroup.map((element) => {        
             if(element.from === this.msgBoxId) {
               this.modalId = element.id;
               this.modalTitle = element.title;
-              this.modalPerson = this.msgBoxTitle;
-              this.modalQuote = element.quote;
+              this.modalPerson = this.msgBoxPerson;
+              this.modalQuote = this.msgBoxMsg;
               this.modalMsg = element.mainText;
+              this.modalImgLink = this.msgBoxImgLink;
             }
           })
+
+          
           if(this.checkedIcon.length > 2) {
             this.thinkingBtnIsOpen = true;
           }
@@ -200,6 +211,7 @@
           }
       }, 
       openThinkingModalBox () {
+          this.msgBoxPerson = "";
           this.msgBoxIsOpen = false;
           this.modalIsOpen = true;
           this.modalTitle = "私たちにできること"
@@ -256,7 +268,7 @@
             this.msgBoxId = "intro1";
             this.msgBoxIsOpen = !this.msgBoxIsOpen;
             this.msgBoxTitle = "はじめに";
-            this.msgBoxMsg = "<p>ここは日本のとある街です。物流2024年問題によって、この街でどのような問題が起こっているかを見てみましょう。</p>";
+            this.msgBoxMsg = "ここは日本のとある街です。物流2024年問題によって、この街でどのような問題が起こっているかを見てみましょう。";
             this.msgBoxBtn = "時間を進める";
             this.msgBoxBtnClose = "";
             }, 3500);
@@ -267,7 +279,7 @@
               this.msgBoxId = "intro2";
               this.msgBoxIsOpen = !this.msgBoxIsOpen;
               this.msgBoxTitle = "街に異変が起きています";
-              this.msgBoxMsg = "<p>物流2024年問題によって、街に異変が起きています。街の皆さんがどのようなことで困っているのか、実際にみてみましょう。</p>";
+              this.msgBoxMsg = "物流2024年問題によって、街に異変が起きています。街の皆さんがどのようなことで困っているのか、実際にみてみましょう。";
               this.msgBoxBtn = "詳しくみてみる";
               this.msgBoxBtnClose = "操作方法を確認する";
               // 次のシーン(シーン3)へ

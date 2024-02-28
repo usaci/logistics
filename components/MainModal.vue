@@ -12,11 +12,16 @@
             person: String,
             quote: String, 
             mainText: String,
+            imgLink: String,
         }, 
         methods: {
             closeModal() {
                 this.$emit('onCloseModal', false);
                 this.isOpenStatus = !this.isOpenStatus;
+                // スクロール位置をリセット
+                setTimeout(() => {
+                    this.$el.children[1].scrollTop = 0;
+                }, 400);
             }
         }
     }
@@ -27,14 +32,14 @@
             <h2 class="mainModal__ttl">{{ title }}</h2>
         </header>
         <section class="mainModal__main">
-            <section class="mainModal__quote">
+            <section class="mainModal__quote" v-if="this.person == !''">
                 <div class="inner">
                     <figure class="mainModal__quote-img">
-                        <img src="/icons/person_ramen.png" alt="住民アイコン">
+                        <img :src="this.imgLink" :alt="this.person">
                     </figure>
-                    <div>
+                    <div class="mainModal__quote-text">
                         <p class="mainModal__quote-ttl">{{ person }}</p>
-                        <p>{{ quote }}</p>
+                        <p v-html="quote"></p>
                     </div>
                 </div>
             </section>
@@ -50,7 +55,7 @@
 
 <style>
     .mainModal {
-        max-width: 500px;
+        max-width: 700px;
         position: absolute;
         background: #fff;
         border-radius: 0.5rem;
@@ -61,6 +66,8 @@
         opacity: 0;
         transition: .4s;
         pointer-events: none;
+        height: fit-content;
+        overflow: scroll;
     }
 
     .mainModal.isOpen {
@@ -71,26 +78,57 @@
     .mainModal .mainModal__ttl {
         font-size: 2.7rem;
         font-weight: bold;
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
     }
 
 
     .mainModal .mainModal__quote .inner {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
+        gap: 1rem;
+    }
+
+    .mainModal .mainModal__quote .inner .mainModal__quote-text {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background: #F1F1F1;
+        padding: 1rem 2rem;
+        /* border: solid 2px #4466E0; */
+        border-radius: 0.5rem;
+        width: 100%;
+    }
+
+    .mainModal .mainModal__quote .inner .mainModal__quote-text:before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 30px;
+        height: 15px;
+        transform: translateY(-50%) rotate(45deg);
+        left: -13px;
+        top: 50%;
+        background: #F1F1F1;
     }
 
     .mainModal .mainModal__quote .inner .mainModal__quote-ttl {
         text-align: center;
         font-weight: bold;
-        font-size: 2.0rem;
+        font-size: 1.8rem;
+        margin-bottom: 0;
+    }
+    .mainModal .mainModal__quote .inner .mainModal__quote-img {
+        width: 25%;
+    }
+    .mainModal .mainModal__quote .inner .mainModal__quote-img img {
+        width: 100%;
     }
 
     .mainModal .mainModal__main {
         margin-bottom: 3rem;
-        max-height: 500px;
-        overflow: scroll;;
+        height: max-content;
     }
 
     .mainModal .mainModal__main * {
@@ -112,7 +150,7 @@
             height: 100%;
             z-index: 1002;
             padding: 3rem;
-            overflow: scroll;
+            overflow: hidden;
         }
 
         .mainModal .mainModal__ttl {
@@ -122,6 +160,7 @@
         .mainModal .mainModal__main {
             max-height: 75%;
             height: 75%;
+            overflow: scroll;
         }
         .mainModal .mainModal__main h2 {
             font-size: 1.7rem;

@@ -22,8 +22,7 @@
             checkedIcon: Array,
             modalIsOpen: Boolean,
             clickedMenuBtn: String,
-            isSoundOn: Boolean,
-            isTouchDevice: Boolean
+            isSoundOn: Boolean
         },
         methods: {
             submitMsgBox() {
@@ -32,6 +31,12 @@
             }, 
         }, 
         mounted() {
+            /* ========================================================
+
+            基本設定
+
+            ======================================================== */
+
             // 初期のウィンドウサイズを設定
             this.w = window.innerWidth;
             this.h = window.innerHeight;
@@ -67,7 +72,12 @@
             // loader
             const loader = new GLTFLoader();
 
-            // camera
+            /* ========================================================
+
+            カメラの設定
+
+            ======================================================== */
+
             const cameraOffset = .17;
             const deg = 100;
             const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -10000, 10000, 1000);
@@ -75,9 +85,15 @@
             camera.position.set(deg, deg * .75, deg);
             // camera.position.set(0, deg * .75, 0);
             camera.aspect = width / height;
-            camera.zoom = .1;
-            // camera.zoom = 0.8;
+            // camera.zoom = .1;
+            camera.zoom = 0.8;
             this.camera = camera;
+
+            /* ========================================================
+
+            メインステージ読み込み
+
+            ======================================================== */
 
             // シーン読み込み
             loader.load('stage.glb', (glb) => {
@@ -86,8 +102,280 @@
                 stage.position.set(0, 0, 0);
             })
 
-            
+            // // GridHelper
+            // const gridHelper = new THREE.GridHelper(10000, 10000);
+            // scene.add(gridHelper);
 
+
+            /* ========================================================
+
+            雲のアニメーション
+
+            ======================================================== */
+
+            const clouds = new THREE.Group();
+            const createCloud = (scale, posX, posY, posZ) => {
+                loader.load('cloud.glb', (glb) => {
+                    const cloud = glb.scene;
+                    cloud.position.set(posX, posY, posZ);
+                    cloud.scale.set(scale, scale, scale)
+                    clouds.add(cloud);
+                })
+            }
+
+            createCloud(1.2, -100, 50, 0);
+            createCloud(0.4, -80, 70, 80);
+            createCloud(0.7, -90, 40, -80);
+            createCloud(1.4, 140, 40, -80);
+            createCloud(1.4, 140, 60, -80);
+            createCloud(.8, 150, 40, -80);
+            createCloud(.6, 170, 40, 20);
+            createCloud(1.0, 240, 60, 140);
+
+            scene.add(clouds);
+
+            // 雲をランダムに動かす
+            const moveCloud = (clouds) => {
+                const tick = () => {
+                    requestAnimationFrame(tick);
+                    clouds.children.forEach((cloud, index) => {
+                        let speed;
+                        if(index % 3 === 0) {
+                            speed = 0.0002;
+                        }else if(index % 3 === 1) {
+                            speed = 0.0007;
+                        }else {
+                            speed = 0.0004;
+                        }
+                        cloud.position.z += speed;
+                    })
+                }
+                tick();
+            }
+
+            moveCloud(clouds);
+
+            /* ========================================================
+
+            車のアニメーション
+
+            ======================================================== */
+            
+            // 右側コースの頂点座標
+            //  平面の頂点座標
+            const vertices = new Float32Array([
+                -87, 1, 87,
+                -33, 1, 87,
+                27, 1, 87,
+                87, 1, 87,
+                147, 1, 87,
+
+                147, 1, 33,
+                87, 1, 33,
+                27, 1, 33,
+                -33, 1, 33,
+                -93, 1, 33,
+
+                -93, 1, -33,
+                -33, 1, -33,
+                27, 1, -33,
+                87, 1, -33,
+                147, 1, -33,
+
+                147, 1, -87,
+                87, 1, -87,
+                27, 1, -87,
+                -33, 1, -87,
+                -87, 1, -87,
+
+                -87, 1, 87,
+                
+            ]);
+
+            //バッファーオブジェクトの生成
+            const geometry = new THREE.BufferGeometry();
+                
+            //バッファーオブジェクトのattributeに頂点座標を設定
+            geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices, 3));
+            
+            const material = new THREE.PointsMaterial({
+            // 一つ一つのサイズ
+            size: 10,
+            // 色
+            color: 0xff0000,
+            });
+            const lineMesh = new THREE.Line(geometry,material);
+            const pointMesh = new THREE.Points(geometry,material);
+
+            // 車を走らせる
+
+            // 頂点の配列をTHREE.Vector3の配列に変換
+            const points = [];
+            for (let i = 0; i < vertices.length; i += 3) {
+                points.push(new THREE.Vector3(vertices[i], 1.4, vertices[i + 2]));
+            }
+
+            // 左側のコースを作成
+            // 超点在表を設定
+            const verticesLeft = new Float32Array([
+                -87, 1, -93,
+                -33, 1, -93,
+                27, 1, -93,
+                87, 1, -93,
+                147, 1, -93,
+
+                147, 1, -27,
+                87, 1, -27,
+                27, 1, -27,
+                -33, 1, -27,
+                -87, 1, -27,
+
+                -87, 1, 27,
+                -33, 1, 27,
+                27, 1, 27,
+                87, 1, 27,
+                153, 1, 27,
+
+                153, 1, 93,
+                87, 1, 93,
+                27, 1, 93,
+                -33, 1, 93,
+                -93, 1, 93,
+
+                -93, 1, -93,
+            ]);
+
+            //バッファーオブジェクトの生成
+            const geometryLeft = new THREE.BufferGeometry();
+                
+            //バッファーオブジェクトのattributeに頂点座標を設定
+            geometryLeft.setAttribute('position',new THREE.Float32BufferAttribute(verticesLeft, 3));
+            
+            const materialLeft = new THREE.PointsMaterial({
+            // 一つ一つのサイズ
+            size: 10,
+            // 色
+            color: 0x00ff00,
+            });
+            const lineMeshLeft = new THREE.Line(geometryLeft,materialLeft);
+            const pointMeshLeft = new THREE.Points(geometryLeft,materialLeft);
+
+            // scene.add(lineMeshLeft);
+            // scene.add(pointMeshLeft);   
+
+            const pointsLeft = [];
+            for (let i = 0; i < verticesLeft.length; i += 3) {
+                pointsLeft.push(new THREE.Vector3(verticesLeft[i], 1.4, verticesLeft[i + 2]));
+            }
+
+            // 左方向2つ目
+            const verticesLeft02 = new Float32Array([
+                -87, 1, -87,
+                -87, 1, 87,
+
+                -33, 1, 87,
+                -33, 1, -33,
+
+                33, 1, -33,
+                33, 1, 87,
+
+                87, 1, 87,
+                87, 1, -87,
+
+            ]);
+
+            //バッファーオブジェクトの生成
+            const geometryLeft02 = new THREE.BufferGeometry();
+                
+            //バッファーオブジェクトのattributeに頂点座標を設定
+            geometryLeft02.setAttribute('position',new THREE.Float32BufferAttribute(verticesLeft02, 3));
+            
+            const materialLeft02 = new THREE.PointsMaterial({
+            // 一つ一つのサイズ
+            size: 10,
+            // 色
+            color: 0x00ffff,
+            });
+            const lineMeshLeft02 = new THREE.Line(geometryLeft02,materialLeft02);
+            const pointMeshLeft02 = new THREE.Points(geometryLeft02,materialLeft02);
+
+            // scene.add(lineMeshLeft02);
+            // scene.add(pointMeshLeft02);   
+
+            const pointsLeft02 = [];
+            for (let i = 0; i < verticesLeft02.length; i += 3) {
+                pointsLeft02.push(new THREE.Vector3(verticesLeft02[i], 1.4, verticesLeft02[i + 2]));
+            }
+
+
+            const animateCar = (glb, pos, index, points, speed) => {
+                const car = glb.scene;
+                // 車を平面の頂点にセットする
+                car.position.set(pos.x, 1.3, pos.z);
+                scene.add(car);
+
+                // 現在の目標頂点のインデックス
+                let targetIndex = index + 1;
+
+                // アニメーションループ
+                const animate = () => {
+                requestAnimationFrame(animate);
+
+                // 現在の位置
+                const currentPosition = new THREE.Vector3().copy(car.position);
+                // 目標頂点
+                const targetPoint = points[targetIndex];
+
+                // 目標頂点に向かって移動
+                const direction = new THREE.Vector3().subVectors(targetPoint, car.position).normalize();
+                const newPosition = new THREE.Vector3().addVectors(car.position, direction.multiplyScalar(speed));  
+
+                car.position.copy(newPosition);
+                if(currentPosition.distanceTo(targetPoint) < speed) {
+                    targetIndex = (targetIndex + 1) % points.length;
+                } else {
+                    car.lookAt(targetPoint);
+                }
+                }
+                animate();
+            }
+
+
+            // 車を走らせる
+            let speed = .1;
+            loader.load('car_red.glb', (glb) => {
+                animateCar(glb, points[1], 1, points, speed);
+            })
+
+            loader.load('car_red.glb', (glb) => {
+                animateCar(glb, pointsLeft[2], 2, pointsLeft, speed);
+            })
+
+            loader.load('truck_yellow.glb', (glb) => {
+                animateCar(glb, pointsLeft02[3], 3, pointsLeft02, speed);
+            })
+
+            loader.load('truck_yellow.glb', (glb) => {
+                animateCar(glb, pointsLeft[4], 4, pointsLeft, speed);
+            })
+
+            loader.load('car_blue.glb', (glb) => {
+                animateCar(glb, pointsLeft02[pointsLeft02.length - 2], pointsLeft02.length - 2, pointsLeft02, speed);
+            })
+
+            loader.load('car_blue.glb', (glb) => {
+                animateCar(glb, pointsLeft[pointsLeft.length - 5], pointsLeft.length - 5, pointsLeft, speed);
+            })
+
+            loader.load('truck_blue.glb', (glb) => {
+                animateCar(glb, points[points.length - 3], points.length - 3, points, speed);
+            })
+            
+            /* ========================================================
+
+            環境照明
+
+            ======================================================== */      
             // light
             const light = new THREE.DirectionalLight(0xffffff, 1.5);
             scene.add(light);
@@ -240,18 +528,20 @@
             }
 
             // アニメーション処理
+            console.log(scene.children)
             const tick = () => {
                 requestAnimationFrame(tick);
                 renderer.render(scene, camera);
-                const intersects = raycaster.intersectObjects(scene.children[3].children);
+                const intersects = raycaster.intersectObjects(scene.children[5].children);
                 this.intersects = intersects;
                 // PCの場合はマウス座標を取得する
                 // アイコンにマウスが重なった時の処理
                 iconGroup.children.map((mesh) => {
                     // シーン3以降で有効になる
                     if(this.whereSceneIs > 2) {
+
                         // PCの場合
-                        if(this.$props.isTouchDevice === false) {
+                        if((window.matchMedia('(min-width: 768px)').matches)) {
                             // マウスカーソルの状態変化
                             intersects.length > 0 && this.msgBoxIsOpen === false ? document.body.style.cursor = "pointer" : document.body.style.cursor = "initial"; 
                             
@@ -262,7 +552,7 @@
                                     y: +1.2,
                                     z: +1.2
                                 });
-                            console.log(mesh);
+    
                             }else {
                                 gsap.to(mesh.scale, {
                                     duration: .4,
@@ -393,17 +683,17 @@
             window.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mouseup', onMouseUp);
             window.addEventListener('touchstart', onTouchStart);
-                // SPの場合はタッチ座標取得する
-                canvas.addEventListener('touchstart', (event) => {
-                    this.mouse.x = (event.targetTouches[0].clientX / window.innerWidth) * 2 - 1;
-                    this.mouse.y = -(event.targetTouches[0].clientY / window.innerHeight) * 2 + 1;
-                    console.log(this.mouse.x, this.mouse.y);
-                    this.iconGroup.children.map((mesh) => {
-                        if(mesh.name === "icon1") {
-                            console.log(mesh.position)
-                        }
-                    })
+            // SPの場合はタッチ座標取得する
+            canvas.addEventListener('touchstart', (event) => {
+                this.mouse.x = (event.targetTouches[0].clientX / window.innerWidth) * 2 - 1;
+                this.mouse.y = -(event.targetTouches[0].clientY / window.innerHeight) * 2 + 1;
+                console.log(this.mouse.x, this.mouse.y);
+                this.iconGroup.children.map((mesh) => {
+                    if(mesh.name === "icon1") {
+                        console.log(mesh.position)
+                    }
                 })
+            })
             tick();
         }, 
         watch: {
@@ -458,12 +748,13 @@
                                 const iconTextureChecked = textureLoader2.load('icons/checked.png');
                                 iconTextureChecked.encoding = THREE.sRGBEncoding;
                                 mesh.material.map = iconTextureChecked;
+                                
+                                // 音を鳴らす
+                                if(this.$props.isSoundOn === true) {
+                                    const checkedSound = new Audio('sounds/checked.mp3');                           
+                                    checkedSound.play();                        
+                                }
                             }, 500);
-                            // 音を鳴らす
-                            if(this.$props.isSoundOn === true) {
-                                const checkedSound = new Audio('sounds/checked.mp3');                           const sound = new Audio('sounds/icon.mp3');
-                                checkedSound.play();                        
-                            }
                         }
                     })
                 },

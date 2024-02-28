@@ -13,6 +13,7 @@
             backBtnMsg: String,
             isOpen: Boolean, 
             whereSceneIs: Number,
+            imgLink: String,
         },
         methods: {
             closeMsgBox() {
@@ -39,7 +40,10 @@
 <template>
     <div class="msgBox" :class="{ isOpen: isOpen }">
         <h2 class="msgBox__title">{{ title }}</h2>
-        <div class="msgBox__text" v-html="msg"></div>
+        <div class="msgBox__text">
+            <img :src="this.$props.imgLink" v-if="this.imgLink" class="msgBox__personImg">
+            <p>{{ msg }}</p>
+        </div>
         <!-- backBtnMsgがないとき -->
         <Button @click="closeMsgBox" :msg="btnMsg" v-if="backBtnMsg == '' || msgId == 'intro2' " />
         <Button @click="openModal" :msg="btnMsg" v-else />
@@ -50,7 +54,7 @@
 <style>
     .msgBox {
         width: 30%;
-        max-width: 500px;
+        max-width: 400px;
         position: absolute;
         background: #fff;
         border-radius: 0.5rem;
@@ -72,6 +76,7 @@
         font-size: 2.6rem;
         font-weight: bold;
         margin-bottom: 2rem;
+        line-height: 1.6;
     }
 
     .msgBox__text {

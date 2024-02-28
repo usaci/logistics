@@ -2,6 +2,7 @@
     export default {
         data() {
             return {
+                headerIsActive: false,
                 btnIsActive: false,
                 menuIsActive: false,
                 btnMsg: "MENU",
@@ -11,7 +12,9 @@
         props: {
             controlBoxIsOpen: Boolean,
             HeaderIsOpen: Boolean,
-            whereSceneIs: Number
+            whereSceneIs: Number,
+            isSoundOn: Boolean,
+            checkedIconLength: Number,
         },
         methods: {
             toggleBtn() {
@@ -58,13 +61,26 @@
                 if(this.$props.controlBoxIsOpen === false) {
                     this.$emit('onOpenControlMsgBox');
                 }
+            }, 
+            setSoundSettingOn() {
+                this.$emit('onSetSoundSetting', true);
+            },
+            setSoundSettingOff() {
+                this.$emit('onSetSoundSetting', false);
             }
          }, 
+         watch: {
+            whereSceneIs() {
+                if(this.$props.whereSceneIs > 2) {
+                    this.headerIsActive = true;
+                }
+            }
+         }
     }
 </script>
 <template>
-    <header class="siteHeader">
-        <div class="inner" :class="{isActive: this.menuIsActive}">            
+    <header class="siteHeader" :class="{isActive: this.headerIsActive}">
+        <div class="inner">            
             <nav id="siteHeader__nav" :class="{ isActive: this.menuIsActive }">
                 <div class="inner">
                     <h1 class="logo"><img src="/logo.png" alt="物流とわたしたち"></h1>
@@ -78,11 +94,21 @@
                         <li><Button msg="物流2024年問題と医療" :btnIsBorder="true" id="icon6" @click="clickIcon"/></li>
                         <li><Button msg="製品の部品が届かない！" :btnIsBorder="true" id="icon7" @click="clickIcon"/></li>
                     </ul>
-                    <Button msg="私たちにできることを考える" />
+                    <Button msg="私たちにできることを考える" v-if="checkedIconLength > 2"/>
                     <button class="backToStart" @click="reset">スタート画面にもどる</button>
+                    <div class="soundsIcons">
+                        <div class="soundsIcons__icon isSoundOn" @click="setSoundSettingOn" v-if="this.$props.isSoundOn === false">
+                            <img src="/icons/volumeon.png" alt="音声ON" class="soundOn">
+                            <p>音声ON</p>
+                        </div>
+                        <div class="soundsIcons__icon isSoundOff" @click="setSoundSettingOff" v-else>
+                            <img src="/icons/volumeoff.png" alt="音声OFF" class="soundOff">
+                            <p>音声OFF</p>
+                        </div>
+                    </div>
                 </div>
             </nav>
-            <div class="siteHeader__btn" @click="toggleBtn" :class="{ isActive: this.btnIsActive }">
+            <div class="siteHeader__btn" @click="toggleBtn" :class="{ isOpen: this.btnIsActive }">
                 <div class="inner">
                     <span></span>
                     <span></span>
@@ -105,6 +131,16 @@
         height: 100px;
         background: transparent;
         z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+        transition: .4s;
+    }
+
+    .siteHeader.isActive {
+        opacity: 1;
+        pointer-events: all;
+        visibility: visible;
     }
 
     /* ロゴ */
@@ -157,6 +193,7 @@
         width: 100%;
         height: 3px;
         background: #fff;
+        transition: .4s;
     }    
 
     .siteHeader .siteHeader__btn .inner > p {
@@ -167,6 +204,9 @@
         top: 32px;
         width: 100%;
     }
+    .siteHeader .siteHeader__btn .inner span:nth-child(1) {
+
+    }
     
     .siteHeader .siteHeader__btn .inner span:nth-child(2) {
         top: 13px;
@@ -174,6 +214,18 @@
 
     .siteHeader .siteHeader__btn .inner span:nth-child(3) {
         top: 26px;
+    }
+
+    .siteHeader .siteHeader__btn.isOpen .inner span:nth-child(1) {
+        transform: translateY(13px) rotate(45deg);
+    }
+    .siteHeader .siteHeader__btn.isOpen .inner span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .siteHeader .siteHeader__btn.isOpen .inner span:nth-child(3) {
+        transform: rotate(-45deg);
+        top: 13px;
     }
 
     /* 操作説明のボタン */
@@ -236,10 +288,32 @@
     .siteHeader #siteHeader__nav .backToStart {
         color: #ccc;
         transition: .2s;
+        margin-bottom: 3rem;
     }
 
     .siteHeader #siteHeader__nav .backToStart:hover {
         color: #4466E0;
+    }
+
+    .siteHeader #siteHeader__nav .soundsIcons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: #4466E0;
+        gap: 20px;
+    }
+
+    .siteHeader #siteHeader__nav .soundsIcons__icon {
+        cursor: pointer;
+    }
+
+    .siteHeader #siteHeader__nav .soundsIcons .soundsIcons__icon:hover {
+        opacity: 0.7;
+    }
+    
+    .siteHeader #siteHeader__nav .soundsIcons img {
+        width: 60px;
     }
 
     @media screen and (max-width: 768px) {
