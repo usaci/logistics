@@ -21,9 +21,8 @@
                 <h1 class="mainTitle"><img src="/logo.png" alt="物流と私たち /"></h1>
                 <p class="subTitle">物流2024年問題について考える</p>
                 <div class="intro__text" :class="{isTextOpen: this.isTextOpen}">
-                    <p>2024年より、トラック運転手をはじめとした運転業務に従事する労働者に対して、
-                        年960時間の労働時間規制が適用されることで、輸送能力の低下が予測されています。</p>
-                    <p class="strong">では、具体的に何が起きるかみてみましょう</p>
+                    <p>2024年4月から始まる働き方改革によってトラックドライバーの労働時間が減り、全国で<span class="strong">約35％</span>の荷物が運べなくなる<span class="strong">「物流2024年問題」</span>。</p>
+                    <p><span class="strong">これから私たちの暮らしがどうなるか、みてみましょう。</span></p>
                 </div>
                 <Button :msg="this.btnTitle" @click="continueContent" />
             </div>
@@ -31,6 +30,7 @@
     </section>
 </template>
 <script>
+    import gsap from 'gsap';
     export default {
         data() {
             return {
@@ -45,9 +45,17 @@
             continueContent() {
                 if( this.count === 0) {
                     // 説明文を表示し、ボタンの文言も変更する
-                    this.btnTitle = "何が起こるか見てみる"
+                    this.btnTitle = "何が起こるかみてみる"
                     this.isTextOpen = !this.isTextOpen;
                     this.count++;
+                    const introText = this.$el.children[0].children[1].children[2];
+                    console.log(introText);
+                    gsap.to(introText, {
+                        height: "auto",
+                        opacity: 1,
+                        duration: .6,
+                        ease: "power4.inOut"
+                    })
 
                 } else if( this.count === 1 ){
                     // スタート画面を非表示にする
@@ -87,7 +95,6 @@
         left: 50%;
         z-index: 1001;
         background: white;
-        font-size: 1.6rem;
         text-align: center;
         opacity: 1;
         transition: .8s;
@@ -108,7 +115,7 @@
     }
 
     .intro .inner .mainTitle img {
-        width: 100%;
+        width: 600px;
         margin: 0 auto;
     }
     
@@ -119,24 +126,20 @@
     }
 
     .intro .inner .intro__text {
-        margin-bottom: 3rem;
+        margin-bottom: 4rem;
         opacity: 0;
-        height: 100%;
-        max-height: 0;
-        transition: all 1.2s;
+        line-height: 1.7;
         pointer-events: none;
+        height: 0px;
+    
     }
 
-    .intro .inner .intro__text.isTextOpen {
-        opacity: 1;
-        max-height: 999px;
-    }
     .intro .inner .intro__text p:first-child {
         margin-bottom: 1rem;
     }
 
     .intro .inner .intro__text .strong {
-        font-size: 2rem;
+        font-size: 2.0rem;
         font-weight: bold;
     }
 
@@ -149,6 +152,7 @@
         transform: translate(-50%, -50%);
         top: 50%;
         left: 50%;
+        width: 60%;
     }
 
     .intro .inner .intro__main.isActive {
@@ -187,7 +191,7 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 1rem;
-        color: #4466E0;
+        color: #1771DA;
         gap: 30px;
     }
 
@@ -207,6 +211,11 @@
             width: 100%;
             padding: 3rem;
         }
+
+        .intro .inner .intro__main, .intro .inner .intro__sounds {
+            width: 100%;
+            padding: 2rem;
+        }
         .intro .inner .mainTitle img {
             width: 100%;
         }
@@ -215,7 +224,7 @@
         }
 
         .intro .inner .intro__text {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
         }
 
         .intro .inner .intro__text .strong {

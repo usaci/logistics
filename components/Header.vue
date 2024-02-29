@@ -45,7 +45,7 @@
                 setTimeout(()=>{
                     menu.style.opacity = 1;
                     menu.style.visibility = "visible";
-                }, 10);
+                }, 80);
             },
             hideMenu() {
                 // 見た目上の処理
@@ -54,7 +54,8 @@
                 menu.style.visibility = "hidden";
                 setTimeout(()=>{
                     menu.style.display = "none";
-                }, 10);
+                    menu.scrollTop = 0;
+                }, 80);
             },
             showControlBox() {
                 console.log(this.$props.controlBoxIsOpen);
@@ -146,7 +147,7 @@
     /* ロゴ */
     .siteHeader .logo {
         top: 0;
-        margin-bottom: 3rem;
+        margin-bottom: 6rem;
     }
     
     .siteHeader .logo img {
@@ -159,7 +160,7 @@
         right: 0px;
         height: 100%;
         width: 100%;
-        background: #4466E0;
+        background: #1771DA;
         border-radius: 50%;
         width: 100px;
         height: 100px;
@@ -292,7 +293,7 @@
     }
 
     .siteHeader #siteHeader__nav .backToStart:hover {
-        color: #4466E0;
+        color: #1771DA;
     }
 
     .siteHeader #siteHeader__nav .soundsIcons {
@@ -300,7 +301,7 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 1rem;
-        color: #4466E0;
+        color: #1771DA;
         gap: 20px;
     }
 
@@ -317,8 +318,12 @@
     }
 
     @media screen and (max-width: 768px) {
+        .siteHeader .logo {
+            margin-bottom: 3rem;
+        }
+
         .siteHeader .logo img {
-            width: 250px;
+            width: 280px;
         }
         /* ヘッダーのボタン */
         .siteHeader .siteHeader__btn {
@@ -327,10 +332,10 @@
             right: 0px;
             height: 100%;
             width: 100%;
-            background: #4466E0;
+            background: #1771DA;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
+            width: 75px;
+            height: 75px;
             cursor: pointer;
             z-index: 1000;
         }
@@ -341,6 +346,17 @@
 
         .siteHeader .siteHeader__btn .inner span:nth-child(3) {
             top: 16px;
+        }
+        .siteHeader .siteHeader__btn.isOpen .inner span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .siteHeader .siteHeader__btn.isOpen .inner span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .siteHeader .siteHeader__btn.isOpen .inner span:nth-child(3) {
+            transform: rotate(-45deg);
+            top: 8px;
         }
         .siteHeader .siteHeader__btn .inner span {
             position: absolute;
@@ -355,14 +371,14 @@
             position: absolute;
             font-weight: bold;
             font-size: 1.2rem;
-            top: 20px;
+            top: 23px;
             width: 100%;
         }
         
         /* 操作説明のボタン */
         .siteHeader .siteHeader__btn.siteHeader__btn-control {
             background: #B6B6B6;
-            right: 75px;
+            right: 80px;
             color: #fff;
             font-size: 1.1rem;
             text-align: center;
@@ -370,14 +386,16 @@
         }
 
         .siteHeader .siteHeader__btn.siteHeader__btn-control img {
-            width: 20px;
+            width: 21px;
             height: auto;
         }
 
         /* ナビゲーション周り */
         .siteHeader #siteHeader__nav .inner {
             width: 100%;
-            padding: 2rem;
+            padding: 10rem 2rem 4rem;
+            height: 100%;
+            overflow: scroll;
         }
 
         .siteHeader #siteHeader__nav .inner .siteHeader__nav-list {
@@ -404,7 +422,7 @@
             background-image: url("/icons/alert.png");
             background-size: cover;
             background-repeat: no-repeat;
-            width: 2.4rem;
+            width: 1.9rem;
             height: 2.8rem;
             transform: translate(-8px, 5px);
         }

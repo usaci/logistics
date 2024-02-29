@@ -32,7 +32,7 @@
             <h2 class="mainModal__ttl">{{ title }}</h2>
         </header>
         <section class="mainModal__main">
-            <section class="mainModal__quote" v-if="this.person == !''">
+            <section class="mainModal__quote" v-if="this.person">
                 <div class="inner">
                     <figure class="mainModal__quote-img">
                         <img :src="this.imgLink" :alt="this.person">
@@ -140,7 +140,7 @@
         padding: 0rem 1rem;
         background: #F1F1F1;
         padding:  0.4rem 1rem;
-        border-left: solid #4466E0 1rem;
+        border-left: solid #1771DA 1rem;
         font-weight: bold;
     }
 
@@ -167,7 +167,7 @@
             padding: 0rem 1rem;
             background: #F1F1F1;
             padding:  0.4rem 1rem;
-            border-left: solid #4466E0 1rem;
+            border-left: solid #1771DA 1rem;
             font-weight: bold;
         }
     }

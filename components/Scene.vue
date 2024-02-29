@@ -398,7 +398,7 @@
             // ------------------------- iconを配置する
             const createIcon = (name, posX, posY, posZ) => {
                 // アイコンをcanvas上で描画する
-                const iconGeometry = new THREE.PlaneGeometry(7.5, 10, 10);
+                const iconGeometry = new THREE.PlaneGeometry(7.5, 12.8, 10);
                 const textureLoader = new THREE.TextureLoader();
                 const iconTexture = textureLoader.load('icons/alert.png');
                 iconTexture.encoding = THREE.sRGBEncoding;
@@ -418,15 +418,15 @@
             }
 
             // 1つ目　ラーメン屋
-            createIcon("icon1", 14, 15, 58);
+            createIcon("icon1", 14, 17, 58);
             // 2つ目　八百屋
-            createIcon("icon2", 14, 15, 75);   
+            createIcon("icon2", 14, 17, 75);   
             // 3つ目 スーパーマーケット
-            createIcon("icon3", -73, 15, 60);
+            createIcon("icon3", -73, 16, 60);
             // 4つ目 カーディーラー
-            createIcon("icon4", 52, 15, 60);
+            createIcon("icon4", 52, 17, 60);
             // 5つ目 住宅街
-            createIcon("icon5", 61, 15, 0); 
+            createIcon("icon5", 61, 17, 0); 
             // 6つ目 病院
             createIcon("icon6", 50, 25, -60);   
             // 7つ目 メーカー

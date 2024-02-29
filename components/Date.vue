@@ -15,7 +15,11 @@
         }, 
         methods: {
             // 実際に日付を計算する
-            calcTime() {
+            calcDays() {
+                gsap.to(this.time, {
+                    year: 2031,
+                    duration: 1,
+                });
                 // 2, 4, 6, 9, 11
                 const samurai = [4, 6, 9, 11];
                 if(this.time.month === 2) {
@@ -47,7 +51,13 @@
                         }
                     }
                 }
-
+            }, 
+            calcYears() {
+                gsap.to(this.time, {
+                    year: 2030,
+                    duration: 6,
+                    ease: "power1.inOut"
+                });
             }
         }, 
         props: {
@@ -55,7 +65,7 @@
         },
         mounted() {
             // デフォルトの日時を定義
-            const time = new Date("2024/01/01");
+            const time = new Date("2024/04/01");
             const month = time.getMonth() + 1;
             const date = time.getDate();
 
@@ -70,12 +80,11 @@
                     this.isDateActive = true;
                     console.log(this.isDateActive);
                 }else if(this.whereSceneIs === 2) {
-                    this.timer = setInterval(this.calcTime, 20);
+                    this.timer = setInterval(this.calcDays, 20);
                 }
             }, 
             "time.month": function() {
-                if(this.time.month === 8 ) {
-                    console.log('time.should be stopped!!!');
+                if(this.time.year === 2030 ) {
                     // タイマーを解除する
                     clearInterval(this.timer);
                 }
@@ -86,7 +95,7 @@
 
 <template>
     <div class="date" :class="{isActive: isDateActive}">
-        <p class="year">2024</p>
+        <p class="year">{{ parseInt(this.time.year) }}</p>
         <p class="month">{{ parseInt(this.time.month).toString().padStart(2, "0") }}.{{ parseInt(this.time.date).toString().padStart(2, "0") }}</p>
     </div>
 </template>
@@ -109,7 +118,7 @@
     .date > p {
         background: #fff;
         width: fit-content;
-        color: #4466E0;
+        color: #1771DA;
         font-size: 2.8rem;
     }
 

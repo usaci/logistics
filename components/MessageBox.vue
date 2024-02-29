@@ -95,7 +95,7 @@
     @media screen and (max-width: 768px){
 
         .msgBox {
-            width: 80%;
+            width: 85%;
             padding: 3rem;
         }
 
