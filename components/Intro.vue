@@ -3,28 +3,42 @@
         <div class="inner">
             <!-- 音量調整画面 -->
             <div class="intro__sounds" :class="{isActive: isSoundSettingActive}">
-                <h2>はじめに</h2>
-                <p>当サイトでは音声を使用します。<br>設定後も、メニューからも切り替えが可能です。</p>
-                <div class="soundsIcons">
-                    <div class="soundsIcons__icon isSoundOn" @click="setSoundSettingOn">
-                        <img src="/icons/volumeon.png" alt="音声ON" class="soundOn">
-                        <p>音声ON</p>
-                    </div>
-                    <div class="soundsIcons__icon isSoundOff" @click="setSoundSettingOff">
-                        <img src="/icons/volumeoff.png" alt="音声OFF" class="soundOff">
-                        <p>音声OFF</p>
-                    </div>
+                <div class="inner">
+                    <figure class="sounds__pic">
+                        <img src="/icons/truck_green.png" alt="はじめに">
+                    </figure>
+                    <h2>はじめに</h2>
+                    <p>当サイトでは音声を使用します。<br>設定後も、メニューからも切り替えが可能です。</p>
+                    <div class="soundsIcons">
+                        <div class="soundsIcons__icon isSoundOn" @click="setSoundSettingOn">
+                            <img src="/icons/volumeon.png" alt="音声ON" class="soundOn">
+                            <p>音声ON</p>
+                        </div>
+                        <div class="soundsIcons__icon isSoundOff" @click="setSoundSettingOff">
+                            <img src="/icons/volumeoff.png" alt="音声OFF" class="soundOff">
+                            <p>音声OFF</p>
+                        </div>
+                </div>
                 </div>
             </div>
             <!-- スタート画面 -->
             <div class="intro__main" :class="{isActive: isIntroMainActive}">
-                <h1 class="mainTitle"><img src="/logo.png" alt="物流と私たち /"></h1>
-                <p class="subTitle">物流2024年問題について考える</p>
-                <div class="intro__text" :class="{isTextOpen: this.isTextOpen}">
-                    <p>2024年4月から始まる働き方改革によってトラックドライバーの労働時間が減り、全国で<span class="strong">約35％</span>の荷物が運べなくなる<span class="strong">「物流2024年問題」</span>。</p>
-                    <p><span class="strong">これから私たちの暮らしがどうなるか、みてみましょう。</span></p>
+                <div class="slider slider__top">
+                    <img src="/icons/ramen.png" alt="">
+                    <img src="/icons/truck_green.png" alt="">
+                    <img src="/icons/temperture.png" alt="">
+                    <img src="/icons/vegs.png" alt="">
+                    <img src="/icons/car_blue.png" alt="">
                 </div>
-                <Button :msg="this.btnTitle" @click="continueContent" />
+                <div class="inner">
+                    <h1 class="mainTitle"><img src="/logo.png" alt="物流と私たち /"></h1>
+                    <p class="subTitle">物流2024年問題について考える</p>
+                    <div class="intro__text" :class="{isTextOpen: this.isTextOpen}">
+                        <p>2024年4月から始まる働き方改革によってトラックドライバーの労働時間が減り、全国で<span class="strong">約35％</span>の荷物が運べなくなる<span class="strong">「物流2024年問題」</span>。</p>
+                        <p><span class="strong">これから私たちの暮らしがどうなるか、みてみましょう。</span></p>
+                    </div>
+                    <Button :msg="this.btnTitle" @click="continueContent" />
+                </div>
             </div>
         </div>
     </section>
@@ -79,6 +93,9 @@
         }, 
         props: {
             isHidden: Boolean
+        }, 
+        mounted() {
+
         }
     }
 </script>
@@ -94,7 +111,6 @@
         top: 0%;
         left: 50%;
         z-index: 1001;
-        background: white;
         text-align: center;
         opacity: 1;
         transition: .8s;
@@ -105,17 +121,17 @@
         pointer-events: none;
     }
 
-    .intro .inner {
+    .intro > .inner {
         width: 50%;
     }
 
     .intro .inner .mainTitle {
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
     }
 
     .intro .inner .mainTitle img {
-        width: 600px;
+        width: 100%;
         margin: 0 auto;
     }
     
@@ -145,6 +161,9 @@
 
     /* スタート画面 */
     .intro .inner .intro__main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: absolute;
         opacity: 0;
         visibility: hidden;
@@ -152,14 +171,20 @@
         transform: translate(-50%, -50%);
         top: 50%;
         left: 50%;
-        width: 60%;
+        width: 100%;
+        height: 100%;
+        background: white;
+        padding: 10rem 5rem;
+        border-radius:10px;
     }
 
     .intro .inner .intro__main.isActive {
         opacity: 1;
         visibility: visible;
     }
-
+    .intro .inner .intro__main > .inner {
+        max-width: 600px;
+    }
     /* サウンド設定 */
     .intro .inner .intro__sounds {
         position: absolute;
@@ -169,6 +194,12 @@
         transform: translate(-50%, -50%);
         top: 50%;
         left: 50%;
+        background: white;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .intro .inner .intro__sounds.isActive {
@@ -204,6 +235,11 @@
     
     .intro .inner .intro__sounds .soundsIcons img {
         width: 80px;
+    }
+
+    .intro .inner .intro__sounds .sounds__pic img {
+        width: 150px;
+        margin-bottom: 3rem;
     }
 
     @media screen and (max-width: 768px){

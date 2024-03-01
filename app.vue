@@ -8,10 +8,10 @@
     <Date :whereSceneIs="this.whereSceneIs"/>
     <Control :isOpen="this.controlBoxIsOpen" :isTouchDevice="this.isTouchDevice" @onCloseControlMsgBox="closeControlMsgBox"/>
     <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openThinkingModalBox" />
-    <div class="clouds">
+    <!-- <div class="clouds">
       <img src="/cloud_left.png" alt="">
       <img src="/cloud_right.png" alt="">
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -105,6 +105,7 @@
         modalQuote: "",
         modalMsg: "",
         modalImgLink: "",
+        modalPerson: "",
         checkedIcon: [],
         thinkingBtnIsOpen: false,
         clickedMenuBtn: "",
@@ -124,11 +125,6 @@
       }
       // 実行
       isTouchDevice();
-
-      // 雲のテクスチャを取得する
-      const clouds = this.$el.children[8];
-      this.maskCloud = clouds;
-      console.log(clouds.children[0]);
 
     }, 
     methods: {
@@ -182,7 +178,7 @@
             if(element.from === this.msgBoxId) {
               this.modalId = element.id;
               this.modalTitle = element.title;
-              this.modalPerson = this.msgBoxPerson;
+              this.msgBoxPerson ? this.modalPerson = this.msgBoxPerson: this.modalPerson = "";
               this.modalQuote = this.msgBoxMsg;
               this.modalMsg = element.mainText;
               this.modalImgLink = this.msgBoxImgLink;
@@ -212,6 +208,7 @@
       }, 
       openThinkingModalBox () {
           this.msgBoxPerson = "";
+          this.modalPerson = this.msgBoxPerson;
           this.msgBoxIsOpen = false;
           this.modalIsOpen = true;
           this.modalTitle = "私たちにできること"
@@ -261,13 +258,11 @@
       whereSceneIs(count) {
         if(count === 1) {
           // シーン1: ダイアログを表示し、時間経過を表す
-            // 雲のトランジションを開始
-            this.maskCloud.classList.add('isHidden');
           setTimeout(()=>{
             // メッセージを表示
             this.msgBoxId = "intro1";
             this.msgBoxIsOpen = !this.msgBoxIsOpen;
-            this.msgBoxTitle = "はじめに";
+            this.msgBoxTitle = "ようこそ！";
             this.msgBoxMsg = "ここは日本のとある街です。物流2024年問題によって、この街でどのような問題が起こっているかを見てみましょう。";
             this.msgBoxBtn = "時間を進める";
             this.msgBoxBtnClose = "";
@@ -308,7 +303,7 @@
   body {
     font-size: 1.6rem;
     font-family: 'Zen Kaku Gothic New', sans-serif;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     line-height: 2;
     font-weight: 500;
   }

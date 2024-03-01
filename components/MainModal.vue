@@ -28,28 +28,30 @@
 </script>
 <template>
     <article class="mainModal" :class="{ isOpen }">
-        <header class="mainModal__header">
-            <h2 class="mainModal__ttl">{{ title }}</h2>
-        </header>
-        <section class="mainModal__main">
-            <section class="mainModal__quote" v-if="this.person">
-                <div class="inner">
-                    <figure class="mainModal__quote-img">
-                        <img :src="this.imgLink" :alt="this.person">
-                    </figure>
-                    <div class="mainModal__quote-text">
-                        <p class="mainModal__quote-ttl">{{ person }}</p>
-                        <p v-html="quote"></p>
+        <div class="inner">
+            <header class="mainModal__header">
+                <h2 class="mainModal__ttl">{{ title }}</h2>
+            </header>
+            <section class="mainModal__main">
+                <section class="mainModal__quote" v-if="this.person">
+                    <div class="inner">
+                        <figure class="mainModal__quote-img">
+                            <img :src="this.imgLink" :alt="this.person">
+                        </figure>
+                        <div class="mainModal__quote-text">
+                            <p class="mainModal__quote-ttl">{{ person }}</p>
+                            <p v-html="quote"></p>
+                        </div>
                     </div>
-                </div>
+                </section>
+                <section class="mainModal__mainText">
+                    <div v-html="mainText"></div>
+                </section>
             </section>
-            <section class="mainModal__mainText">
-                <div v-html="mainText"></div>
-            </section>
-        </section>
-        <footer>
-            <Button msg="とじる" :btnIsBorder="true" @click="closeModal"/>
-        </footer>
+            <footer>
+                <Button msg="とじる" :btnIsBorder="true" @click="closeModal"/>
+            </footer>
+        </div>
     </article>
 </template>
 
@@ -67,7 +69,12 @@
         transition: .4s;
         pointer-events: none;
         height: fit-content;
+        max-height: 100%;
         overflow: scroll;
+    }
+
+    .mainModal > .inner {
+        height: max-content;
     }
 
     .mainModal.isOpen {
@@ -150,7 +157,7 @@
             height: 100%;
             z-index: 1002;
             padding: 3rem;
-            overflow: hidden;
+            overflow: scroll;
         }
 
         .mainModal .mainModal__ttl {

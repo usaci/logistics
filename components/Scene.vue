@@ -528,7 +528,6 @@
             }
 
             // アニメーション処理
-            console.log(scene.children)
             const tick = () => {
                 requestAnimationFrame(tick);
                 renderer.render(scene, camera);
