@@ -50,11 +50,14 @@
             hideMenu() {
                 // 見た目上の処理
                 const menu = this.$el.children[0].children[0];
+                const menuInner = menu.children[0];
+                console.log(menuInner)
                 menu.style.opacity = 0;
                 menu.style.visibility = "hidden";
                 setTimeout(()=>{
                     menu.style.display = "none";
-                    menu.scrollTop = 0;
+                    menuInner.scrollTop = 0;
+                    console.log(menu.scrollTop)
                 }, 80);
             },
             showControlBox() {

@@ -24,11 +24,42 @@
             <!-- スタート画面 -->
             <div class="intro__main" :class="{isActive: isIntroMainActive}">
                 <div class="slider slider__top">
-                    <img src="/icons/ramen.png" alt="">
-                    <img src="/icons/truck_green.png" alt="">
-                    <img src="/icons/temperture.png" alt="">
-                    <img src="/icons/vegs.png" alt="">
-                    <img src="/icons/car_blue.png" alt="">
+                    <div class="slider-wrapper">
+                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/temperture.png" alt="">
+                        <img src="/icons/vegs.png" alt="">
+                        <img src="/icons/car_blue.png" alt="">
+                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/temperture.png" alt="">
+                        <img src="/icons/vegs.png" alt="">
+                        <img src="/icons/car_blue.png" alt="">
+                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/temperture.png" alt="">
+                        <img src="/icons/vegs.png" alt="">
+                        <img src="/icons/car_blue.png" alt="">
+                    </div>
+                </div>
+                <div class="slider slider__bottom">
+                    <div class="slider-wrapper">
+                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/danball.png" alt="">
+                        <img src="/icons/vegs.png" alt="">
+                        <img src="/icons/car_red.png" alt="">
+                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/danball.png" alt="">
+                        <img src="/icons/vegs.png" alt="">
+                        <img src="/icons/car_red.png" alt="">
+                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/danball.png" alt="">
+                        <img src="/icons/vegs.png" alt="">
+                        <img src="/icons/car_red.png" alt="">
+                    </div>
                 </div>
                 <div class="inner">
                     <h1 class="mainTitle"><img src="/logo.png" alt="物流と私たち /"></h1>
@@ -62,7 +93,7 @@
                     this.btnTitle = "何が起こるかみてみる"
                     this.isTextOpen = !this.isTextOpen;
                     this.count++;
-                    const introText = this.$el.children[0].children[1].children[2];
+                    const introText = this.$el.children[0].children[1].children[2].children[2];
                     console.log(introText);
                     gsap.to(introText, {
                         height: "auto",
@@ -95,7 +126,24 @@
             isHidden: Boolean
         }, 
         mounted() {
+            // スライダーの無限ループを実装
 
+            const sliderTop = this.$el.children[0].children[1].children[0].children[0];
+            const sliderBottom = this.$el.children[0].children[1].children[1].children[0];
+            const animateSlider = (slider, duration) => {
+                const sliderFirst = slider.children[0].getBoundingClientRect().left;
+                const sliderBorder = slider.children[5].getBoundingClientRect().left;
+                console.log(sliderFirst, sliderBorder);
+                gsap.to(slider, {
+                    x: -sliderBorder,
+                    duration: duration,
+                    repeat: -1,
+                    ease: "none"
+                })
+            }
+
+            animateSlider(sliderTop, 10);
+            animateSlider(sliderBottom, 10);
         }
     }
 </script>
@@ -185,6 +233,32 @@
     .intro .inner .intro__main > .inner {
         max-width: 600px;
     }
+
+    /* スライダー */
+    .intro .inner .intro__main .slider {
+        position: absolute;
+        width: 100%;
+        height: auto;
+    }
+
+    .intro .inner .intro__main .slider.slider__top {
+        top: 20px;
+    }
+
+    .intro .inner .intro__main .slider.slider__bottom {
+        bottom: 20px;
+    }
+
+    .intro .inner .intro__main .slider .slider-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        width: max-content;
+    }  
+    .intro .inner .intro__main .slider .slider-wrapper > img {
+        height: 150px;
+    }
+
     /* サウンド設定 */
     .intro .inner .intro__sounds {
         position: absolute;
@@ -245,7 +319,6 @@
     @media screen and (max-width: 768px){
         .intro .inner {
             width: 100%;
-            padding: 3rem;
         }
 
         .intro .inner .intro__main, .intro .inner .intro__sounds {
@@ -265,6 +338,10 @@
 
         .intro .inner .intro__text .strong {
             font-size: 1.7rem;
+        }
+
+        .intro .inner .intro__main .slider .slider-wrapper > img {
+            height: 75px;
         }
     }
 </style>

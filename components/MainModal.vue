@@ -18,9 +18,10 @@
             closeModal() {
                 this.$emit('onCloseModal', false);
                 this.isOpenStatus = !this.isOpenStatus;
+                console.log(this.$el.children[0]);
                 // スクロール位置をリセット
                 setTimeout(() => {
-                    this.$el.children[1].scrollTop = 0;
+                    this.$el.scrollTop = 0;
                 }, 400);
             }
         }
