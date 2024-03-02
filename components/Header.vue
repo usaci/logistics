@@ -92,8 +92,8 @@
                     <ul class="siteHeader__nav-list">
                         <li><Button msg="また値上げ！？" :btnIsBorder="true" @click="clickIcon" id="icon1"/></li>
                         <li><Button msg="新鮮な野菜が買えなくなる？" :btnIsBorder="true" id="icon2" @click="clickIcon"/></li>
-                        <li><Button msg="品揃えが減る？" :btnIsBorder="true" id="icon3" @click="clickIcon"/></li>
-                        <li><Button msg="納車が最短で半年後！" :btnIsBorder="true" id="icon4" @click="clickIcon"/></li>
+                        <li><Button msg="スーパーから品揃えが減る？" :btnIsBorder="true" id="icon3" @click="clickIcon"/></li>
+                        <li><Button msg="納車が最短で半年後！？" :btnIsBorder="true" id="icon4" @click="clickIcon"/></li>
                         <li><Button msg="なかなか届かない荷物" :btnIsBorder="true" id="icon5" @click="clickIcon"/></li>
                         <li><Button msg="物流2024年問題と医療" :btnIsBorder="true" id="icon6" @click="clickIcon"/></li>
                         <li><Button msg="製品の部品が届かない！" :btnIsBorder="true" id="icon7" @click="clickIcon"/></li>
@@ -397,7 +397,7 @@
         .siteHeader #siteHeader__nav .inner {
             width: 100%;
             padding: 10rem 2rem 4rem;
-            height: 100%;
+            height: 100svh;
             overflow: scroll;
         }
 

@@ -3,16 +3,20 @@
         data() {
             return {
                 isOpenStatus: false,
-                btnIsBorder: Boolean
+                btnIsBorder: Boolean,
+                openedCount: 0,
+                scrollHintIsOpen: false,
             }
         },
         props: {
+            id: String,
             isOpen: Boolean,
             title: String,
             person: String,
-            quote: String, 
             mainText: String,
+            quote: String,
             imgLink: String,
+            isTouchDevice: Boolean,
         }, 
         methods: {
             closeModal() {
@@ -23,6 +27,25 @@
                 setTimeout(() => {
                     this.$el.scrollTop = 0;
                 }, 400);
+            }, 
+            openScrollHint() {
+                this.scrollHintIsOpen = true;
+            },
+            closeScrollHint() {
+                this.scrollHintIsOpen = false;
+            }
+
+        }, 
+        watch: {
+            isOpen(val) {
+                if(val === true) {
+                    this.openedCount++;
+                }
+            },
+            openedCount(val) {
+                if(val === 1) {
+                    this.openScrollHint();
+                }
             }
         }
     }
@@ -31,7 +54,7 @@
     <article class="mainModal" :class="{ isOpen }">
         <div class="inner">
             <header class="mainModal__header">
-                <h2 class="mainModal__ttl">{{ title }}</h2>
+                <h2 class="mainModal__ttl" :class="this.$props.id === 'thinkingModal' ? 'solution' : 'problem'">{{ title }}</h2>
             </header>
             <section class="mainModal__main">
                 <section class="mainModal__quote" v-if="this.person">
@@ -52,6 +75,7 @@
             <footer>
                 <Button msg="とじる" :btnIsBorder="true" @click="closeModal"/>
             </footer>
+            <ScrollHint :isOpen="scrollHintIsOpen" :isTouchDevice="this.$props.isTouchDevice"/>
         </div>
     </article>
 </template>
@@ -72,6 +96,8 @@
         height: fit-content;
         max-height: 100%;
         overflow: scroll;
+        box-shadow: 0px 0px 0px 1000px rgb(0 0 0 / 0.14);
+        z-index: 101;
     }
 
     .mainModal > .inner {
@@ -89,7 +115,23 @@
         margin-bottom: 3rem;
     }
 
+    .mainModal .mainModal__ttl:before {
+        content: "";
+        display: inline-block;
+        width: 1.4em;
+        height: 1.4em;
+        margin: -0.2em 0;
+    }
 
+    .mainModal .mainModal__ttl.problem:before {
+        background: url(icons/alert.png) no-repeat;
+        background-size: contain;
+    }
+
+    .mainModal .mainModal__ttl.solution:before {
+        background: url(icons/checked.png) no-repeat;
+        background-size: contain;
+    }
     .mainModal .mainModal__quote .inner {
         display: flex;
         flex-direction: row;
@@ -152,6 +194,24 @@
         font-weight: bold;
     }
 
+    .mainModal .mainModal__main cite {
+        font-size: 1.2rem;
+        line-height: 1.5;
+        font-style: normal;
+    }
+
+    .mainModal .mainModal__main em {
+        background: #ffde6a;
+        font-style: normal;
+        font-weight: bold;
+    }
+    .mainModal .mainModal__main figure {
+        text-align: center;
+    }
+    .mainModal .mainModal__main figure > img {
+        width: 200px;
+        margin: 0 auto;
+    }
     @media screen and (max-width: 768px){
         .mainModal {
             width: 100%;

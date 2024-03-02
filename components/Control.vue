@@ -29,6 +29,7 @@
                 this.$el.style.visibility = "visible";
                 this.title = "操作説明";
                 let icon;
+
                 if(this.$props.isTouchDevice === true ) {
                     // SPの場合
                     this.msg = "画面をスワイプすると、街を動かすことができます。";
@@ -77,7 +78,7 @@
                     if(this.$props.isTouchDevice === true ) {
                         // SPの場合
                         this.msg = "画面をピンチイン、ピンチアウトすると、街を拡大・縮小できます。";
-                        this.imgUrl = "icons/finger.png";
+                        this.imgUrl = "icons/finger_pinch.png";
                         icon = this.$el.children[1];
                     }else {
                         // PCの場合
@@ -137,18 +138,18 @@
 </template>
 <style>
     .controlBox {
-        width: 30%;
-        max-width: 500px;
+        width: 300px;
         position: absolute;
         background: #fff;
         border-radius: 0.5rem;
         transform: translate(-50%, -50%);
         left: 50%;
         top: 50%;
-        padding: 5rem 4rem;
+        padding: 2rem;
         opacity: 0;
         transition: .4s;
         pointer-events: none;
+        box-shadow: 0px 0px 0px 1000px rgb(0 0 0 / 0.14);
     }
 
     .controlBox.isOpen {
@@ -184,14 +185,8 @@
     }
 
     .controlBox__icon img {
-        width: 50%;
+        width: 75px;
         height: auto;
     }
-    @media screen and (max-width: 768px){
 
-        .controlBox {
-            width: 95%;
-        }
-        
-    }
 </style>

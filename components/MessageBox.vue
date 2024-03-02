@@ -53,7 +53,7 @@
 </template>
 <style>
     .msgBox {
-        width: 30%;
+        width: 400px;
         max-width: 400px;
         position: absolute;
         background: #fff;
@@ -65,6 +65,7 @@
         opacity: 0;
         transition: .4s;
         pointer-events: none;
+    box-shadow: 0px 0px 0px 1000px rgb(0 0 0 / 0.14);
     }
 
     .msgBox.isOpen {

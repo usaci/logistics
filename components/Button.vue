@@ -13,6 +13,7 @@
 
 <style>
     .btn {
+        position: relative;
         background: #1771DA;
         color: #fff;
         font-weight: bold;
@@ -20,9 +21,12 @@
         width: 100%;
         text-align: center;
         margin-bottom: 1.4rem;
-        transition: .2s;
+        transition: all .2s;      
+        transition: background-color .2s;
         max-width: 600px;
         border-radius: 6px;
+        overflow: hidden;
+        line-height: 1.6;
     }
 
     .btn.btnIsBorder {
@@ -32,11 +36,15 @@
     }
 
     .btn:hover {
-        background: #E9C02F;
+        background-color: #3918D9;
     }
 
     .btn.btnIsBorder:hover {
         background: #1771DA;
         color: #fff;
+    }
+
+    .btn.btnIsBorder:after {
+        display: none;
     }
 </style>

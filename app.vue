@@ -4,14 +4,10 @@
     <Intro :class="{isHidden: isStartHidden}" @onClickStart="hiddenStart" @onSetSoundSetting="setSoundSetting"/>
     <Scene :isTouchDevice="this.isTouchDevice" @onClickMsgBox="openMsgBox" :whereSceneIs="this.whereSceneIs" :msgBoxIsOpen="this.msgBoxIsOpen" :checkedIcon ="this.checkedIcon" :modalIsOpen ="this.modalIsOpen" :clickedMenuBtn="this.clickedMenuBtn" :isSoundOn="this.isSoundOn"/>
     <MessageBox :title="this.msgBoxTitle" :msg="this.msgBoxMsg" :isOpen="this.msgBoxIsOpen" :msgId="this.msgBoxId" :btnMsg="this.msgBoxBtn" :backBtnMsg="this.msgBoxBtnClose" @onCloseMsgBox="closeMsgBox" @onOpenModal="openModalBox" :whereSceneIs="this.whereSceneIs" @onOpenControlMsgBox="openControlMsgBox" :imgLink="this.msgBoxImgLink" />
-    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :person="this.modalPerson" :imgLink="this.modalImgLink" :quote="this.modalQuote" :mainText="this.modalMsg"/>
+    <MainModal :isOpen="this.modalIsOpen" @onCloseModal="closeModalBox" :id="this.modalId" :title="this.modalTitle" :person="this.modalPerson" :imgLink="this.modalImgLink" :quote="this.modalQuote" :mainText="this.modalMsg" :isTouchDevice="this.isTouchDevice"/>
     <Date :whereSceneIs="this.whereSceneIs"/>
     <Control :isOpen="this.controlBoxIsOpen" :isTouchDevice="this.isTouchDevice" @onCloseControlMsgBox="closeControlMsgBox"/>
     <Button msg="私たちにできることを考える" class="toThinking" :class="{isOpen: this.thinkingBtnIsOpen}" @click="openThinkingModalBox" />
-    <!-- <div class="clouds">
-      <img src="/cloud_left.png" alt="">
-      <img src="/cloud_right.png" alt="">
-    </div> -->
   </div>
 </template>
 <script>
@@ -28,7 +24,7 @@
         msgGroup: [
           {id: "icon1", title: "ラーメン屋店主", msg: "ごめんね、マシマシラーメン、また値上げなんだ・・・。",imgLink: "icons/person_ramen.png", btnMsg: "詳しく話を聞く", backBtnMsg: "とじる", },
           {id: "icon2", title: "八百屋の客", msg: "最近新鮮な野菜が見なくなった気がするんですよね・・・。",imgLink: "icons/person_customer.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
-          {id: "icon3", title: "スーパーの店員", msg: "すみません、この商品は現在品薄となっております・・・。",imgLink: "icons/person_sp.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
+          {id: "icon3", title: "スーパーの店員", msg: "大変申し訳ございません。この商品は現在品切れとなっております・・・。",imgLink: "icons/person_sp.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
           {id: "icon4", title: "ディーラーの営業マン", msg: "部品の調達が遅れている関係で納車は最短で半年後になりそうです。",imgLink: "icons/person_carDealer.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
           {id: "icon5", title: "住民", msg: "ネットショッピングの翌日配送サービスを利用したのに、なかなか荷物が届かないのよね・・・。",imgLink: "icons/person_resident.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
           {id: "icon6", title: "看護師", msg: "医療器具の配達が遅れてしまって困っています。今すぐにでも必要だというのに・・・。",imgLink: "icons/person_nurse.png", btnMsg: "詳しく話を聞いてみる", backBtnMsg: "とじる", },
@@ -52,7 +48,7 @@
             person: "ラーメン屋店主",
             quote: "ごめんね、マシマシラーメン、また値上げなんだ・・・。",
             mainText: 
-            "<p>この街で行列ができるラーメン屋の名物「マシマシラーメン」の価格が200円ほど上がっているようです。</p><h2>なぜ値上げが発生しうるのか</h2><p>物流2024年問題はトラックドライバーの働き方から端を発する問題です。<br>これまで長時間労働が当たり前だったトラックドライバーの待遇改善が見込まれる一方で、労働時間の減少や人手不足により運送会社の売り上げが減少することが予想されます。</p><p>運送会社は売上の減少分を輸送運賃の値上げによって補うことが予想されます。</p><p>ラーメン屋は、食材や麺、食器など様々な物資を運送業者に頼って調達しています。そのため、物流2024年問題による運賃の高騰は、ラーメン屋の経営を圧迫し、商品への価格転嫁という形で値上げが発生します。</p>",
+            "<p>この街で行列ができるラーメン屋の名物「マシマシラーメン」の価格が200円ほど上がっているようです。</p><h2>なぜラーメンが値上げするのか</h2><p>物流2024年問題はトラックドライバーの働き方改革から端を発する問題です。<br>働き方改革による労働時間の減少や人手不足により運送会社の売り上げが減少することが予想されます。</p><p>運送会社は売上が減った分を、<em>運賃の値上げ</em>によって補うことが予想されます。</p><figure><img src='icons/ramen.png' alt/></figure><p>ラーメン屋をはじめとする飲食店は、食材などの様々な物資を運送業者に頼って調達しています。輸送運賃が高くなることで、結果として<em>商品の値上げ</em>につながる可能性があるのです。</p>",
           },
           {
             id: "modal2", 
@@ -60,42 +56,38 @@
             title: "新鮮な野菜が買えなくなる？",
             person: "八百屋の客",
             quote: "最近新鮮な野菜が見なくなった気がするんですよね・・・。",
-            mainText: "<p>こちらは街に昔からある八百屋さんです。<br>以前に比べて新鮮な野菜が買いにくくなってしまっているようです。</p><h2>なぜ新鮮な野菜が手に入らないのか</h2><p>物流2024年問題はトラックドライバーの働き方から端を発する問題です。<br>これまで長時間労働が当たり前だったトラックドライバーの待遇改善が見込まれる一方で、時間の制約から長距離の輸送が難しくなることが懸念されています。</p><p>野菜や肉、魚といった生鮮食品は産地から長距離の輸送を経て私たちの元に届きます。長距離輸送が難しくなることによって、鮮度を良い食品を手に入れにくくなることが考えられます。</p>",
+            mainText: "<p>こちらは街に昔からある八百屋さんです。<br>以前に比べて新鮮な野菜が買いにくくなってしまっているようです。</p><h2>なぜ新鮮な野菜が手に入らないのか</h2><p>トラックドライバーの働き方改革によって、これまで長時間労働が当たり前だったトラックドライバーの待遇改善が見込まれる一方で、時間の制約から長距離の輸送が難しくなることが懸念されています。</p><figure><img src='icons/vegs.png' alt></figure><p>野菜や肉、魚といった生鮮食品は産地から長時間の輸送を経て、私たちの元に届きます。これまでのような長距離輸送が難しくなることによって、<em>鮮度を良い食品を手に入れにくくなることが考えられます。</em></p><p>スーパーマーケットや八百屋、魚屋などで売られる食材の質はもちろんのこと、それらを使って提供される飲食店でのサービスにも影響が及ぶ可能性があります。</p>",
           },
           {
             id: "modal3", 
             from: "icon3",
-            title: "品揃えが減る？",
+            title: "スーパーから品揃えが減る？",
             quote: "ここに引用が入ります",
-            mainText: "<p>この街を代表する大型スーパーです。最近品揃えが悪くなったという声が街で聞かれるようになりました。</p><h2>品揃えが少なくなる理由</h2><p>トラックドライバーの働き方改革によって、一人当たりの労働時間が減少します。労働時間の減少に伴う輸送効率の低下や、長距離輸送が難しくなることによって、スーパーマーケットなどの小売店の品揃えに影響が出る恐れがあります。</p>",
+            mainText: "<p>この街を代表する大型スーパーです。最近、商品の品揃えが悪くなったという声が街で聞かれるようになりました。</p><h2>品揃えが少なくなる理由</h2><figure><img src='icons/vegs.png' alt></figure><p>トラックドライバーの働き方改革によって、一人当たりの労働時間が減少します。トラックドライバーの労働時間が制限されることによって、最適なタイミングでの輸送や、長距離にわたる輸送が従来よりも難しくなリます。その結果として、スーパーマーケットなどの小売店の品揃えが悪くなるといった影響が出る可能性があります。</p><p>スーパーマーケットやコンビニエンスストアのような小売店での品揃えが悪くなることで、生活必需品が思うように手に入りにくくなることが考えられます。</p>",
           },
           {
             id: "modal4", 
             from: "icon4",
-            title: "納車が最短で半年後！",
-            quote: "ここに引用が入ります",
-            mainText: "<p>ついに憧れのマイカーを購入！・・・のはずが、納車はまさかの半年後・・・。</p><h2>物流2024年問題と部品輸送</h2><p>トラックドライバーの働き方改革によって、製品の製造に必要な部品の輸送が滞る恐れがあります。<br>これにより、メーカー側でも納期通りに部品を手に入れることができなくなり、その結果として製品の製造にも遅延が生じる可能性が指摘されています。</p>",
+            title: "納車が最短で半年後！？",
+            mainText: "<p>ついに憧れのマイカーを新車で購入！・・・のはずが、納車はまさかの半年後・・・。</p><h2>物流2024年問題と部品輸送</h2><figure><img src='icons/car_red.png' alt></figure><p>トラックドライバーの働き方改革によって、2030年には日本全体での<em>輸送能力が３割以上減少</em>するという予測があります。輸送能力の低下によって、製品の製造に必要な部品の輸送が滞る恐れがあります。<br>自動車の製造に必要な部品を納期通りに手に入れることができなくなり、納車が遅くなることが考えられます。</p><p>このような問題は自動車に限らず、提供される過程に輸送を必要とする商品やサービスで発生する可能性があります。</p>",
           },
           {
             id: "modal5", 
             from: "icon5",
             title: "なかなか届かない荷物",
-            quote: "ここに引用が入ります",
-            mainText: "<p>いつでも、どこでも買い物ができて便利なネットショッピング。ただ、以前よりも配送に時間がかかっているみたいです。</p><h2>物流サービスの低下</h2><p>トラックドライバーの労働時間が減少することで、以前よりも1日あたりの輸送回数が減少します。1日あたりの輸送頻度が少なくなることで、翌日配送やお急ぎ便のような従来通りの輸送サービスが受けにくくなることが予想されているのです。</p>",
+            mainText: "<p>いつでも、どこでも買い物ができて便利なネットショッピング。ただ、利便性が以前よりも下がっているようです。</p><h2>物流サービスの低下</h2><figure><img src='icons/danball.png' alt></figure><p>トラックドライバーの労働時間が減少することで、以前よりも1日あたりの輸送回数が減少します。1日あたりの輸送頻度が少なくなることで、<em>翌日配送やお急ぎ便のように、従来では当たり前のように使えていた便利な輸送サービスが受けにくくなる</em>ことが予想されているのです。</p><p>また、時間短縮の必要から「置き配」によるお届けが増えることも予想されています。</p><p>今までのように「今日注文すれば明日届く」「その日中に再配達ができる」というわけにはいかなくなるのです。</p>",
           },
           {
             id: "modal6", 
             from: "icon6",
             title: "物流2024年問題と医療",
-            quote: "ここに引用が入ります",
-            mainText: "<p>物流2024年問題は医療にも影響を及ぼす恐れがあります。</p><h2>医療機器の流通に悪影響</h2><p>トラックドライバーの働き方改革によって、輸送サービスの品質低下が懸念されています。<br>医療機器の配送遅延が生じ、本来であれば受けられるはずの患者の治療が遅れてしまう恐れがあります。</p><h2>過疎地域の医療格差が深刻化</h2><p>過疎地域では都市部と比べて物流が不安定になり、医療機器の配送がより困難になることが予想されます。これにより、都市部と過疎地域の医療格差が深刻化する恐れがあるのです。</p><cite>参考：https://www.mhlw.go.jp/content/10807000/001154230.pdf</cite>",
+            mainText: "<p>物流2024年問題は医療にも影響を及ぼす恐れがあります。</p><h2>医療機器の流通に悪影響</h2><figure><img src='icons/temperture.png' alt /></figure><p>トラックドライバーの働き方改革によって、輸送サービスの品質低下が懸念されています。<br>医療機器の配送遅延が生じ、本来であれば受けられるはずの患者の治療が遅れてしまう恐れがあります。</p><h2>過疎地域の医療格差が深刻化</h2></figure><p>これに加えて、過疎地域では都市部と比べて物流が不安定になり、医療機器の配送がより困難になることが予想されます。これにより、<em>都市部と過疎地域の医療格差が深刻化</em>する恐れがあるのです。</p><p>これらの問題が直接関係するのは医療従事者の人々ですが、時に患者となる私たちに全く関係のないものではありません。</p><cite>参考：<a href=''>https://www.mhlw.go.jp/content/10807000/001154230.pdf</a></cite>",
           },
           {
             id: "modal7", 
             from: "icon7",
             title: "製品の部品が届かない！",
-            quote: "<p>ここに引用が入ります</p>",
-            mainText: "ここに本文が入ります",
+            mainText: "<p>この街で創業した日本を代表する電子機器メーカー本社です。製品の製造に必要な備品の納期が延期され、予定通りに製品が作れないという状況になっています。</p><h2>物流2024年問題と部品輸送</h2><figure><img src='icons/parts.png' alt></figure><p>トラックドライバーの働き方改革によって、2030年には日本全体での<em>輸送能力が３割以上減少</em>するという予測があります。これにより、必要な部品の輸送が滞る恐れがあります。<br>このように、メーカー側でも納期通りに部品や材料を手に入れることができなくなり、製品の製造などに影響が出ることが懸念されています。</p><p>製品の製造が遅れれば、当然私たち消費者の手に届くまでに時間がかかることにもなります。</p>",
           },
         ], 
         modalIsOpen: false,
@@ -109,7 +101,6 @@
         checkedIcon: [],
         thinkingBtnIsOpen: false,
         clickedMenuBtn: "",
-        maskCloud: "",
       }
     },
     mounted() {
@@ -207,12 +198,15 @@
           }
       }, 
       openThinkingModalBox () {
+          this.modalId = "thinkingModal";
           this.msgBoxPerson = "";
           this.modalPerson = this.msgBoxPerson;
           this.msgBoxIsOpen = false;
           this.modalIsOpen = true;
+          this.modalImgLink = "";
+          this.modalQuote = "";
           this.modalTitle = "私たちにできること"
-          this.modalMsg = "<p>これまで学んできたように、物流2024年問題は物流業界にとどまらず、私たち一般消費者の生活にも大きな影響を及ぼします。</p><p>しかし、私たちの行動を変えることによって、物流業界で働く人々の負担を減らし、物流2024年問題を解決する助けになることができます。物流2024年問題に対して私たちができることを考えてみましょう。</p><h2>指定した時間に必ず受け取ろう</h2><p>不在による再配達は、トラックドライバーの負担を大きく増加させます。荷物の受け取り時間の前後には必ず家にいるようにして、確実に荷物を受け取れるように心がけましょう。また、決まった時間で荷物を受け取るのが難しい場合は、宅配ボックスや置き配、コンビニ受け取りなどの利用も検討しましょう。</p><h2>お急ぎ便は必要な時にだけ</h2><p>最短でその日中に荷物が届くお急ぎ便。無料となるとどうしてもお急ぎ便を使いたくなりがちですが、トラックドライバーの負担を軽減するためにも、本当に必要な時だけ使うようにしましょう。</p><h2>まとめ買いで運ぶ回数を減らそう</h2><p>ネットショッピングなどで買い物をする際、まとめ買いによって注文回数を絞ることによって、配送回数を減らすことにつながります。</p>";
+          this.modalMsg = "<p>これまで学んできたように、物流2024年問題は物流業界にとどまらず、私たち一般消費者の生活にも大きな影響を及ぼします。</p><p>しかし、私たちの行動を変えることによって、物流業界で働く人々の負担を減らし、物流2024年問題を解決する助けになることができます。物流2024年問題に対して私たちができることを考えてみましょう。</p><h2>指定した時間に必ず受け取ろう</h2><p>不在による再配達は、トラックドライバーの負担を大きく増加させます。荷物の受け取り時間の前後には必ず家にいるようにして、<em>確実に荷物を受け取れる</em>ように心がけましょう。<br>また、決まった時間で荷物を受け取るのが難しい場合は、宅配ボックスや置き配、コンビニ受け取りなどの利用も検討しましょう。</p><h2>お急ぎ便は必要な時にだけ</h2><p>最短でその日中に荷物が届くお急ぎ便。無料となるとどうしてもお急ぎ便を使いたくなりがちですが、トラックドライバーの負担を軽減するためにも、<em>本当に必要な時だけ</em>使うようにしましょう。</p><h2>まとめ買いで運ぶ回数を減らそう</h2><p>ネットショッピングなどで買い物をする際、まとめ買いによって注文回数を絞ることによって、配送回数を減らすことにつながります。なるべく<em>一度にまとめてお買い物をする</em>ことを心がけましょう。</p><h2>送り状の住所は正しく入力しよう</h2>";
 
           // ボタンを非表示にする
           this.thinkingBtnIsOpen = false;
@@ -251,8 +245,7 @@
       setSoundSetting(val) {
         this.isSoundOn = val;
         console.log(this.isSoundOn);
-      }
-
+      }, 
     }, 
     watch: {
       whereSceneIs(count) {
@@ -291,7 +284,7 @@
         }, 
         deep: true,
       }
-    }
+    },
     
   }
 </script>
@@ -319,11 +312,27 @@
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 40rem;
     font-size: 2.4rem;
-    z-index: 101;
+    z-index: 100;
+    padding: 1rem 2rem;
+  
   }
-
+  .toThinking:after {
+    content: "";
+    display: block;
+    position: absolute;
+    margin-left: 2rem;
+    width: 35px;
+    right: 20px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 40px;
+    background: #fff;
+    opacity: 1;
+    z-index: -1;
+    background: url(icons/button-arrow.png) no-repeat center center;
+    background-size: contain;
+  }
   .toThinking.isOpen {
     display: block;
   }

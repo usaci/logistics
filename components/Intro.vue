@@ -5,7 +5,7 @@
             <div class="intro__sounds" :class="{isActive: isSoundSettingActive}">
                 <div class="inner">
                     <figure class="sounds__pic">
-                        <img src="/icons/truck_green.png" alt="はじめに">
+                        <img :src="this.pic" alt="はじめに">
                     </figure>
                     <h2>はじめに</h2>
                     <p>当サイトでは音声を使用します。<br>設定後も、メニューからも切り替えが可能です。</p>
@@ -30,11 +30,13 @@
                         <img src="/icons/temperture.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_blue.png" alt="">
+
                         <img src="/icons/ramen.png" alt="">
                         <img src="/icons/truck_green.png" alt="">
                         <img src="/icons/temperture.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_blue.png" alt="">
+                        
                         <img src="/icons/ramen.png" alt="">
                         <img src="/icons/truck_green.png" alt="">
                         <img src="/icons/temperture.png" alt="">
@@ -44,17 +46,18 @@
                 </div>
                 <div class="slider slider__bottom">
                     <div class="slider-wrapper">
-                        <img src="/icons/ramen.png" alt="">
                         <img src="/icons/truck_green.png" alt="">
                         <img src="/icons/danball.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_red.png" alt="">
                         <img src="/icons/ramen.png" alt="">
+
                         <img src="/icons/truck_green.png" alt="">
                         <img src="/icons/danball.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_red.png" alt="">
                         <img src="/icons/ramen.png" alt="">
+
                         <img src="/icons/truck_green.png" alt="">
                         <img src="/icons/danball.png" alt="">
                         <img src="/icons/vegs.png" alt="">
@@ -79,6 +82,7 @@
     export default {
         data() {
             return {
+                pic: "",
                 count: 0,
                 btnTitle: "はじめる",
                 isTextOpen: false,
@@ -97,8 +101,8 @@
                     console.log(introText);
                     gsap.to(introText, {
                         height: "auto",
-                        opacity: 1,
                         duration: .6,
+                        opacity: 1,
                         ease: "power4.inOut"
                     })
 
@@ -126,8 +130,30 @@
             isHidden: Boolean
         }, 
         mounted() {
-            // スライダーの無限ループを実装
+            // ランダムで出す
+            const pics = [
+                "/icons/truck_red.png",
+                "/icons/truck_green.png",
+                "/icons/truck_yellow.png",
+            ]
 
+            const randomPic = () => {
+                const random = Math.random();
+                let result;
+                if(random <= 1 && random > 0.6) {
+                    result = pics[0];
+                } else if(random <= 0.6 && random > 0.3) {
+                    result = pics[1];
+                } else if(random <= 0.3 && random >= 0) {
+                    result = pics[2];
+                }
+                console.log(random);
+                return result;
+                
+            };
+            this.pic = randomPic();
+
+            // スライダーの無限ループを実装
             const sliderTop = this.$el.children[0].children[1].children[0].children[0];
             const sliderBottom = this.$el.children[0].children[1].children[1].children[0];
             const animateSlider = (slider, duration) => {
@@ -162,6 +188,7 @@
         text-align: center;
         opacity: 1;
         transition: .8s;
+        background: #fff;
     }
 
     .intro.isHidden {
@@ -221,9 +248,7 @@
         left: 50%;
         width: 100%;
         height: 100%;
-        background: white;
         padding: 10rem 5rem;
-        border-radius:10px;
     }
 
     .intro .inner .intro__main.isActive {
@@ -252,11 +277,11 @@
     .intro .inner .intro__main .slider .slider-wrapper {
         display: flex;
         align-items: center;
-        gap: 40px;
+        gap: 50px;
         width: max-content;
     }  
     .intro .inner .intro__main .slider .slider-wrapper > img {
-        height: 150px;
+        height: 120px;
     }
 
     /* サウンド設定 */
@@ -281,6 +306,18 @@
         visibility: visible;
     }
 
+    .intro .inner .intro__sounds .inner {
+        animation: fadeIn .6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
     .intro .inner .intro__sounds h2 {
         font-size: 2.6rem;
         font-weight: bold;

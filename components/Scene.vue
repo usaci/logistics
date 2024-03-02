@@ -22,7 +22,8 @@
             checkedIcon: Array,
             modalIsOpen: Boolean,
             clickedMenuBtn: String,
-            isSoundOn: Boolean
+            isSoundOn: Boolean,
+            isTouchDevice: Boolean,
         },
         methods: {
             submitMsgBox() {
@@ -31,6 +32,7 @@
             }, 
         }, 
         mounted() {
+
             /* ========================================================
 
             基本設定
@@ -82,8 +84,8 @@
             const deg = 100;
             const camera = new THREE.OrthographicCamera( (this.w / - 2) * cameraOffset, (this.w / 2) * cameraOffset, (this.h / 2) * cameraOffset, (this.h / - 2) * cameraOffset, -10000, 10000, 1000);
             scene.add( camera );
+            camera.position.set(0, deg * .75, 0);
             camera.position.set(deg, deg * .75, deg);
-            // camera.position.set(0, deg * .75, 0);
             camera.aspect = width / height;
             // camera.zoom = .1;
             camera.zoom = 0.8;
@@ -101,11 +103,6 @@
                 scene.add(stage);
                 stage.position.set(0, 0, 0);
             })
-
-            // // GridHelper
-            // const gridHelper = new THREE.GridHelper(10000, 10000);
-            // scene.add(gridHelper);
-
 
             /* ========================================================
 
@@ -127,8 +124,7 @@
             createCloud(0.4, -80, 70, 80);
             createCloud(0.7, -90, 40, -80);
             createCloud(1.4, 140, 40, -80);
-            createCloud(1.4, 140, 60, -80);
-            createCloud(.8, 150, 40, -80);
+            createCloud(.8, 150, 40, -200);
             createCloud(.6, 170, 40, 20);
             createCloud(1.0, 240, 60, 140);
 
@@ -155,6 +151,306 @@
 
             moveCloud(clouds);
 
+            /* ========================================================
+
+            人が歩くアニメーション
+
+            ======================================================== */
+
+            // // 人を配置する
+            const people = new THREE.Group();
+            people.name = "people";
+            scene.add(people);
+            
+            // 歩行の軌道を作る
+            const createWalkRoute = (offsetX, offsetZ) => {
+                const walkVertices = [
+                    22 + offsetX, 1, 22 + offsetZ,
+                    -22 + offsetX, 1, 22 + offsetZ,
+                    -22 + offsetX, 1, -22 + offsetZ,
+                    22 + offsetX, 1, -22 + offsetZ,
+                ]
+
+                const walkPoints = [];
+                for (let i = 0; i < walkVertices.length; i += 3) {
+                    walkPoints.push(new THREE.Vector3(walkVertices[i], 1.4, walkVertices[i + 2]));
+                }
+
+                // バッファーオブジェクトの生成
+                const walkGeometry = new THREE.BufferGeometry();
+
+                walkGeometry.setAttribute('position', new THREE.Float32BufferAttribute(walkVertices, 3));
+
+                const walkMaterial = new THREE.PointsMaterial({
+                    size: 10,
+                    color: 0x00ff00,
+                });
+
+                const walkMesh = new THREE.Points(walkGeometry, walkMaterial);
+                scene.add(walkMesh);
+                return walkPoints;
+            }
+
+            // 真っ直ぐの軌道を作る
+            const straightWalkRoute = (offsetX, offsetZ) => {
+                const walkVertices = [
+                    22 + offsetX, 1, 22 + offsetZ,
+                    -22 + offsetX, 1, 22 + offsetZ,
+                ]
+
+                const walkPoints = [];
+                for (let i = 0; i < walkVertices.length; i += 3) {
+                    walkPoints.push(new THREE.Vector3(walkVertices[i], 1.4, walkVertices[i + 2]));
+                }
+
+                console.log(walkPoints);
+
+                // バッファーオブジェクトの生成
+                const walkGeometry = new THREE.BufferGeometry();
+
+                walkGeometry.setAttribute('position', new THREE.Float32BufferAttribute(walkVertices, 3));
+
+                const walkMaterial = new THREE.PointsMaterial({
+                    size: 10,
+                    color: 0xffff00,
+                });
+
+                const walkMesh = new THREE.Points(walkGeometry, walkMaterial);
+                scene.add(walkMesh);
+                return walkPoints;
+            }
+
+            const walkRoute01 = createWalkRoute(0, 0);
+            const walkRoute02 = createWalkRoute(60, 0);
+            const walkRoute03 = createWalkRoute(0, 60);
+            const walkRoute04 = createWalkRoute(60, 60);
+            const walkRoute05 = createWalkRoute(-60, 60);
+            const walkRoute06 = createWalkRoute(-60, 0);
+            const walkRoute07 = createWalkRoute(60, -60);
+            const walkRoute08 = createWalkRoute(120, -60);
+            const walkRoute09 = createWalkRoute(120, 0);
+            const walkRoute10 = createWalkRoute(120, 60);
+
+            const walkRoute11 = straightWalkRoute(0, 47);
+            const walkRoute12 = straightWalkRoute(0, 45);
+
+            // 人を歩かせる
+            const clock = new THREE.Clock();
+            const clips = [];
+
+            const animatePerson = (glb, points, index, speed, offsetX, offsetY) => {
+                const person = glb.scene;
+                people.add(person);
+
+                person.scale.set(0.6, 0.6, 0.6);
+                person.position.set((points[index].x) + offsetX, 0, (points[index].z) + offsetY);
+
+                // アニメーションを読み込む
+                const mixer = new THREE.AnimationMixer(person);
+                glb.animations.forEach((clip) => {
+                    let action = mixer.clipAction(clip);
+                    action.setLoop(THREE.LoopRepeat);
+                    action.play();
+                });
+
+
+                // 軌道に沿って歩かせる
+                // 現在の目標頂点のインデックス
+                let targetIndex;
+                if(index === points.length - 1) {
+                    targetIndex = 0;
+                } else {
+                    targetIndex = index + 1;
+                }
+
+                // アニメーションループ
+                const animate = () => {
+                    requestAnimationFrame(animate);
+                    mixer.update(0.017);
+                    // 現在の位置
+                    const currentPosition = new THREE.Vector3().copy(person.position);
+                    // 目標頂点
+                    const targetPoint = points[targetIndex];
+
+                    // 目標頂点に向かって移動
+                    const direction = new THREE.Vector3().subVectors(targetPoint, person.position).normalize();
+                    const newPosition = new THREE.Vector3().addVectors(person.position, direction.multiplyScalar(speed));  
+
+                    person.position.copy(newPosition);
+                    if(currentPosition.distanceTo(targetPoint) < speed) {
+                        targetIndex = (targetIndex + 1) % points.length;
+                    } else {
+                        person.lookAt(targetPoint);
+                    }
+                }
+                animate();
+            }
+
+            // 人を歩かせる
+            const walkingRoute01 = () => {
+                loader.load('person01.glb', (glb) => {
+                    animatePerson(glb, walkRoute01, 0, .007, 0, 0);
+                })
+                loader.load('person05.glb', (glb) => {
+                    animatePerson(glb, walkRoute01, 1, .007, 0, 0);
+                })
+                loader.load('person03.glb', (glb) => {
+                    animatePerson(glb, walkRoute01, 2, .007, 0, 0);
+                })
+            }
+            walkingRoute01();
+
+            const walkingRoute02 = () => {
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute02, 2, .007, 0, 0);
+                })
+                
+                loader.load('person01.glb', (glb) => {
+                    animatePerson(glb, walkRoute02, 1, .007, 0, 0);
+                })
+                
+                loader.load('person05.glb', (glb) => {
+                    animatePerson(glb, walkRoute02, 0, 0.01, 0, 0);
+                })
+            }
+            walkingRoute02();
+
+            const walkingRoute03 = () => {
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute03, 2, .007, 0, 0);
+                })
+                
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute03, 1, .007, 0, 0);
+                })
+                
+                loader.load('person02.glb', (glb) => {
+                    animatePerson(glb, walkRoute03, 3, 0.01, 0, 0);
+                })
+            }
+            walkingRoute03();
+
+            const walkingRoute04 = () => {
+                loader.load('person03.glb', (glb) => {
+                    animatePerson(glb, walkRoute04, 2, .007, 0, 0);
+                })
+                
+                loader.load('person01.glb', (glb) => {
+                    animatePerson(glb, walkRoute04, 1, .007, 0, 0);
+                })
+                
+                loader.load('person05.glb', (glb) => {
+                    animatePerson(glb, walkRoute04, 3, 0.01, 0, 0);
+                })
+            }
+            walkingRoute04();
+
+            const walkingRoute05 = () => {
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute05, 2, .007, 0, 0);
+                })
+                
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute05, 1, .007, 0, 0);
+                })
+                
+                loader.load('person02.glb', (glb) => {
+                    animatePerson(glb, walkRoute05, 0, 0.01, 0, 0);
+                })
+            }
+            walkingRoute05();
+
+            const walkingRoute06 = () => {
+                loader.load('person03.glb', (glb) => {
+                    animatePerson(glb, walkRoute06, 2, .007, 0, 0);
+                })
+                
+                loader.load('person01.glb', (glb) => {
+                    animatePerson(glb, walkRoute06, 1, .007, 0, 0);
+                })
+                
+                loader.load('person05.glb', (glb) => {
+                    animatePerson(glb, walkRoute06, 0, 0.01, 0, 0);
+                })
+            }
+            walkingRoute06();
+
+            const walkingRoute07 = () => {
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute07, 2, .007, 0, 0);
+                })
+                
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute07, 1, .007, 0, 0);
+                })
+                
+                loader.load('person02.glb', (glb) => {
+                    animatePerson(glb, walkRoute07, 0, 0.01, 0, 0);
+                })
+            }
+            walkingRoute07();
+
+            const walkingRoute08 = () => {
+                loader.load('person03.glb', (glb) => {
+                    animatePerson(glb, walkRoute08, 2, .007, 0, 0);
+                })
+                
+                loader.load('person01.glb', (glb) => {
+                    animatePerson(glb, walkRoute08, 1, .007, 0, 0);
+                })
+                
+                loader.load('person05.glb', (glb) => {
+                    animatePerson(glb, walkRoute08, 0, 0.01, 0, 0);
+                })
+            }
+            walkingRoute08();
+
+            const walkingRoute09 = () => {
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute09, 2, .007, 0, 0);
+                })
+                
+                loader.load('person04.glb', (glb) => {
+                    animatePerson(glb, walkRoute09, 1, .007, 0, 0);
+                })
+                
+                loader.load('person02.glb', (glb) => {
+                    animatePerson(glb, walkRoute09, 0, 0.01, 0, 0);
+                })
+            }
+            walkingRoute09();
+
+            const walkingRoute10 = () => {
+                loader.load('person03.glb', (glb) => {
+                    animatePerson(glb, walkRoute10, 2, .007, 0, 0);
+                })
+                
+                loader.load('person01.glb', (glb) => {
+                    animatePerson(glb, walkRoute10, 1, .007, 0, 0);
+                })
+                
+                loader.load('person05.glb', (glb) => {
+                    animatePerson(glb, walkRoute10, 0, 0.01, 0, 0);
+                })
+            }
+            walkingRoute10();
+
+            const walkingRoute11 = () => {
+                
+                loader.load('person05.glb', (glb) => {
+                    animatePerson(glb, walkRoute11, 0, .007, 0, 0);
+                })
+            }
+            walkingRoute11();
+
+            const walkingRoute12 = () => {
+                loader.load('person02.glb', (glb) => {
+                    animatePerson(glb, walkRoute12, 0, .007, 0, 0);
+                })
+            }
+            walkingRoute12();
+            
+    
             /* ========================================================
 
             車のアニメーション
@@ -257,6 +553,7 @@
             // 色
             color: 0x00ff00,
             });
+
             const lineMeshLeft = new THREE.Line(geometryLeft,materialLeft);
             const pointMeshLeft = new THREE.Points(geometryLeft,materialLeft);
 
@@ -281,7 +578,6 @@
 
                 87, 1, 87,
                 87, 1, -87,
-
             ]);
 
             //バッファーオブジェクトの生成
@@ -315,27 +611,32 @@
                 scene.add(car);
 
                 // 現在の目標頂点のインデックス
-                let targetIndex = index + 1;
+                let targetIndex;
+                if(index === points.length - 1) {
+                    targetIndex = 0;
+                } else {
+                    targetIndex = index + 1;
+                }
 
                 // アニメーションループ
                 const animate = () => {
-                requestAnimationFrame(animate);
+                    requestAnimationFrame(animate);
 
-                // 現在の位置
-                const currentPosition = new THREE.Vector3().copy(car.position);
-                // 目標頂点
-                const targetPoint = points[targetIndex];
+                    // 現在の位置
+                    const currentPosition = new THREE.Vector3().copy(car.position);
+                    // 目標頂点
+                    const targetPoint = points[targetIndex];
 
-                // 目標頂点に向かって移動
-                const direction = new THREE.Vector3().subVectors(targetPoint, car.position).normalize();
-                const newPosition = new THREE.Vector3().addVectors(car.position, direction.multiplyScalar(speed));  
+                    // 目標頂点に向かって移動
+                    const direction = new THREE.Vector3().subVectors(targetPoint, car.position).normalize();
+                    const newPosition = new THREE.Vector3().addVectors(car.position, direction.multiplyScalar(speed));  
 
-                car.position.copy(newPosition);
-                if(currentPosition.distanceTo(targetPoint) < speed) {
-                    targetIndex = (targetIndex + 1) % points.length;
-                } else {
-                    car.lookAt(targetPoint);
-                }
+                    car.position.copy(newPosition);
+                    if(currentPosition.distanceTo(targetPoint) < speed) {
+                        targetIndex = (targetIndex + 1) % points.length;
+                    } else {
+                        car.lookAt(targetPoint);
+                    }
                 }
                 animate();
             }
@@ -375,7 +676,8 @@
 
             環境照明
 
-            ======================================================== */      
+            ======================================================== */  
+
             // light
             const light = new THREE.DirectionalLight(0xffffff, 1.5);
             scene.add(light);
@@ -385,6 +687,12 @@
             // ambient
             const ambient = new THREE.AmbientLight(0xffffff, 2.5);
             scene.add(ambient);
+
+            /* ========================================================
+
+            アイコン
+
+            ======================================================== */
 
             // ------------------------- ここからiconを配置する
 
@@ -440,6 +748,12 @@
             })
 
             // ------------------------- icon終了
+            
+            /* ========================================================
+
+            座標取得
+
+            ======================================================== */
 
             // マウス座標取得
             const getMousePosition = (event) => {
@@ -493,15 +807,25 @@
                 controls.update();
             })
 
-            // MapControls
+            /* ========================================================
+
+            mapControls
+
+            ======================================================== */
+
             const controls = new MapControls( camera, canvas );
             controls.target.set(0, 0, 0);
             controls.enabled = false;
-            controls.enableRotate = true;
+            controls.enableRotate = false;
             controls.enableDamping = true;
             controls.enablePan = true;
-            // controls.minZoom = 1;
-            // controls.maxZoom = 4;
+            if(this.$props.isTouchDevice === false ) {
+                controls.minZoom = 1;
+                controls.maxZoom = 4;
+            } else {
+                controls.minZoom = .5;
+                controls.maxZoom = 2;
+            }
             this.controls = controls;
 
             // rayCaster
@@ -527,20 +851,31 @@
                 this.iconIsClicked = true;
             }
 
+            /* ========================================================
+
+            アニメーション処理
+
+            ======================================================== */
+
             // アニメーション処理
             const tick = () => {
                 requestAnimationFrame(tick);
+                // ミキサーに格納されているアニメーションを実行
                 renderer.render(scene, camera);
-                const intersects = raycaster.intersectObjects(scene.children[5].children);
+                let intersects;
+                scene.children.map((child) => {
+                    if(child.name === "iconGroup") {
+                        intersects = raycaster.intersectObjects(child.children);
+                    }
+                })
                 this.intersects = intersects;
                 // PCの場合はマウス座標を取得する
                 // アイコンにマウスが重なった時の処理
                 iconGroup.children.map((mesh) => {
                     // シーン3以降で有効になる
                     if(this.whereSceneIs > 2) {
-
                         // PCの場合
-                        if((window.matchMedia('(min-width: 768px)').matches)) {
+                        if(this.$props.isTouchDevice === false) {
                             // マウスカーソルの状態変化
                             intersects.length > 0 && this.msgBoxIsOpen === false ? document.body.style.cursor = "pointer" : document.body.style.cursor = "initial"; 
                             
@@ -700,10 +1035,11 @@
                 // シーンを進める処理を行う
                 // シーン1ではカメラをズームインし、雲を動かす
                 if(val === 1) {
+                    const zoom = this.$props.isTouchDevice === true ? .7 : 1;
                     gsap.to(this.camera, {
                         ease: "power1.inOut",
                         duration: 3.6,
-                        zoom: 1
+                        zoom: zoom,
                     })
                 }
                 // シーン2では5秒前後でiconが次々と増えていく
