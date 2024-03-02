@@ -15,6 +15,7 @@ export default defineNuxtConfig({
       title: "物流とわたしたち | 物流2024年問題を考える", 
       meta: [
         { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+        { hid: "description", name: "description", content: "物流とわたしたちは、物流2024年問題が私たち一般消費者の生活に与える影響や、問題解決のために私たちにできることを直感的に楽しく学べるWebサイトです。" },
       ]
     }
   }

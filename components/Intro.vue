@@ -98,7 +98,7 @@
                     this.isTextOpen = !this.isTextOpen;
                     this.count++;
                     const introText = this.$el.children[0].children[1].children[2].children[2];
-                    console.log(introText);
+
                     gsap.to(introText, {
                         height: "auto",
                         duration: .6,
@@ -147,7 +147,7 @@
                 } else if(random <= 0.3 && random >= 0) {
                     result = pics[2];
                 }
-                console.log(random);
+    
                 return result;
                 
             };
@@ -157,11 +157,9 @@
             const sliderTop = this.$el.children[0].children[1].children[0].children[0];
             const sliderBottom = this.$el.children[0].children[1].children[1].children[0];
             const animateSlider = (slider, duration) => {
-                const sliderFirst = slider.children[0].getBoundingClientRect().left;
-                const sliderBorder = slider.children[5].getBoundingClientRect().left;
-                console.log(sliderFirst, sliderBorder);
+                const sliderWidth = slider.children[0].offsetWidth;
                 gsap.to(slider, {
-                    x: -sliderBorder,
+                    x: (-sliderWidth - 40) * 5 - 40,
                     duration: duration,
                     repeat: -1,
                     ease: "none"
@@ -281,7 +279,7 @@
         width: max-content;
     }  
     .intro .inner .intro__main .slider .slider-wrapper > img {
-        height: 120px;
+        width: 100px;
     }
 
     /* サウンド設定 */

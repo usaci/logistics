@@ -107,7 +107,6 @@
       // デバイスを判定する
       const isTouchDevice = () => {
         const userAgent = window.navigator.userAgent.toLowerCase();
-        console.log(userAgent);
         if(userAgent.indexOf('iphone') !== -1 || userAgent.indexOf('ipad') !== -1 || userAgent.indexOf('android') !== -1) {
           this.isTouchDevice = true;
         }else {
@@ -159,7 +158,7 @@
           this.thinkingBtnIsOpen = true;
         }
       },
-      openModalBox(val) {
+      openModalBox() {
           // モーダルウィンドウを表示する
           this.msgBoxIsOpen = !this.msgBoxIsOpen;
           this.modalIsOpen = true;
@@ -180,7 +179,6 @@
           if(this.checkedIcon.length > 2) {
             this.thinkingBtnIsOpen = true;
           }
-          console.log(document.body);    
   
       },
       closeModalBox() {
@@ -206,7 +204,7 @@
           this.modalImgLink = "";
           this.modalQuote = "";
           this.modalTitle = "私たちにできること"
-          this.modalMsg = "<p>これまで学んできたように、物流2024年問題は物流業界にとどまらず、私たち一般消費者の生活にも大きな影響を及ぼします。</p><p>しかし、私たちの行動を変えることによって、物流業界で働く人々の負担を減らし、物流2024年問題を解決する助けになることができます。物流2024年問題に対して私たちができることを考えてみましょう。</p><h2>指定した時間に必ず受け取ろう</h2><p>不在による再配達は、トラックドライバーの負担を大きく増加させます。荷物の受け取り時間の前後には必ず家にいるようにして、<em>確実に荷物を受け取れる</em>ように心がけましょう。<br>また、決まった時間で荷物を受け取るのが難しい場合は、宅配ボックスや置き配、コンビニ受け取りなどの利用も検討しましょう。</p><h2>お急ぎ便は必要な時にだけ</h2><p>最短でその日中に荷物が届くお急ぎ便。無料となるとどうしてもお急ぎ便を使いたくなりがちですが、トラックドライバーの負担を軽減するためにも、<em>本当に必要な時だけ</em>使うようにしましょう。</p><h2>まとめ買いで運ぶ回数を減らそう</h2><p>ネットショッピングなどで買い物をする際、まとめ買いによって注文回数を絞ることによって、配送回数を減らすことにつながります。なるべく<em>一度にまとめてお買い物をする</em>ことを心がけましょう。</p><h2>送り状の住所は正しく入力しよう</h2>";
+          this.modalMsg = "<div class='flex'><figure><img src='/icons/person_maker.png' alt></figure><figure><img src='/icons/person_customer.png' alt></figure><figure><img src='/icons/person_resident.png' alt></figure></div><p>これまで学んできたように、物流2024年問題は物流業界にとどまらず、私たち一般消費者の生活にも大きな影響を及ぼします。</p><p>しかし、私たちの行動によって、物流業界で働く人々の負担を減らし、物流2024年問題を解決する助けになることができます。物流2024年問題に対して私たちができることを考えてみましょう。</p><h2>指定した時間に必ず受け取ろう</h2><p>不在による再配達は、トラックドライバーの負担を大きく増加させます。荷物の受け取り時間の前後には必ず家にいるようにして、<em>確実に荷物を受け取れる</em>ように心がけましょう。<br>また、決まった時間で荷物を受け取るのが難しい場合は、<em>宅配ボックスや置き配、コンビニ受け取り</em>など対面しなくても荷物の受け取りが可能なサービス利用しましょう。</p><h2>お急ぎ便は必要な時にだけ</h2><p>最短でその日中に荷物が届くお急ぎ便。無料となるとどうしてもお急ぎ便を使いたくなりがちですが、トラックドライバーの負担を軽減するためにも、<em>本当に必要な時だけ</em>使うようにしましょう。</p><h2>まとめ買いで運ぶ回数を減らそう</h2><p>ネットショッピングなどで買い物をする際、まとめ買いによって注文回数を絞ることによって、配送回数を減らすことにつながります。なるべく<em>一度にまとめてお買い物をする</em>ことを心がけましょう。</p><h2>送り状の住所は正しく入力しよう</h2><p>送り状の記入ミスによって、配達の無駄が生じてしまいます。ネットショッピングを利用する際は、フォームに入力した住所などが間違っていないか確認しましょう。</p>";
 
           // ボタンを非表示にする
           this.thinkingBtnIsOpen = false;
@@ -244,7 +242,6 @@
       },
       setSoundSetting(val) {
         this.isSoundOn = val;
-        console.log(this.isSoundOn);
       }, 
     }, 
     watch: {

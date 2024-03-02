@@ -87,8 +87,7 @@
             camera.position.set(0, deg * .75, 0);
             camera.position.set(deg, deg * .75, deg);
             camera.aspect = width / height;
-            // camera.zoom = .1;
-            camera.zoom = 0.8;
+            camera.zoom = .1;
             this.camera = camera;
 
             /* ========================================================
@@ -124,6 +123,7 @@
             createCloud(0.4, -80, 70, 80);
             createCloud(0.7, -90, 40, -80);
             createCloud(1.4, 140, 40, -80);
+
             createCloud(.8, 150, 40, -200);
             createCloud(.6, 170, 40, 20);
             createCloud(1.0, 240, 60, 140);
@@ -187,7 +187,7 @@
                 });
 
                 const walkMesh = new THREE.Points(walkGeometry, walkMaterial);
-                scene.add(walkMesh);
+                // scene.add(walkMesh);
                 return walkPoints;
             }
 
@@ -203,8 +203,6 @@
                     walkPoints.push(new THREE.Vector3(walkVertices[i], 1.4, walkVertices[i + 2]));
                 }
 
-                console.log(walkPoints);
-
                 // バッファーオブジェクトの生成
                 const walkGeometry = new THREE.BufferGeometry();
 
@@ -216,7 +214,7 @@
                 });
 
                 const walkMesh = new THREE.Points(walkGeometry, walkMaterial);
-                scene.add(walkMesh);
+                // scene.add(walkMesh);
                 return walkPoints;
             }
 
@@ -1021,12 +1019,6 @@
             canvas.addEventListener('touchstart', (event) => {
                 this.mouse.x = (event.targetTouches[0].clientX / window.innerWidth) * 2 - 1;
                 this.mouse.y = -(event.targetTouches[0].clientY / window.innerHeight) * 2 + 1;
-                console.log(this.mouse.x, this.mouse.y);
-                this.iconGroup.children.map((mesh) => {
-                    if(mesh.name === "icon1") {
-                        console.log(mesh.position)
-                    }
-                })
             })
             tick();
         }, 
@@ -1104,7 +1096,6 @@
                 val === true ? this.controls.enabled = false: this.controls.enabled = true;
             }, 
             clickedMenuBtn(val, oldVal) {
-                console.log(val, oldVal);
                 this.iconGroup.children.map((mesh)=> {
                     if((val && mesh.name === val) || (val ==="" && oldVal && mesh.name === oldVal)) {
                         // アイコンをクリックした時と同様の処理を実行

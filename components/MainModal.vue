@@ -22,7 +22,6 @@
             closeModal() {
                 this.$emit('onCloseModal', false);
                 this.isOpenStatus = !this.isOpenStatus;
-                console.log(this.$el.children[0]);
                 // スクロール位置をリセット
                 setTimeout(() => {
                     this.$el.scrollTop = 0;
@@ -182,7 +181,7 @@
     }
 
     .mainModal .mainModal__main * {
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
     }
 
     .mainModal .mainModal__main h2 {
@@ -192,12 +191,17 @@
         padding:  0.4rem 1rem;
         border-left: solid #1771DA 1rem;
         font-weight: bold;
+        margin-bottom: 2rem;
     }
 
     .mainModal .mainModal__main cite {
         font-size: 1.2rem;
         line-height: 1.5;
         font-style: normal;
+    }
+
+    .mainModal .mainModal__main .flex {
+        display: flex;
     }
 
     .mainModal .mainModal__main em {

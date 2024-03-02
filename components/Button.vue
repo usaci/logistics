@@ -13,6 +13,7 @@
 
 <style>
     .btn {
+        display: block;
         position: relative;
         background: #1771DA;
         color: #fff;
@@ -20,7 +21,7 @@
         padding: 1rem 2rem;
         width: 100%;
         text-align: center;
-        margin-bottom: 1.4rem;
+        margin: 0 auto 1.4rem;
         transition: all .2s;      
         transition: background-color .2s;
         max-width: 600px;

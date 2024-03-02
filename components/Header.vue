@@ -110,6 +110,7 @@
                             <p>音声OFF</p>
                         </div>
                     </div>
+                    <small>&nbsp;2024 物流とわたしたち</small>
                 </div>
             </nav>
             <div class="siteHeader__btn" @click="toggleBtn" :class="{ isOpen: this.btnIsActive }">
@@ -207,9 +208,6 @@
         font-size: 1.6rem;
         top: 32px;
         width: 100%;
-    }
-    .siteHeader .siteHeader__btn .inner span:nth-child(1) {
-
     }
     
     .siteHeader .siteHeader__btn .inner span:nth-child(2) {
