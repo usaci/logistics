@@ -376,7 +376,7 @@
         }
 
         .intro .inner .intro__main .slider .slider-wrapper > img {
-            height: 75px;
+            width: 75px;
         }
     }
 </style>

@@ -296,6 +296,7 @@
     letter-spacing: 0.05em;
     line-height: 2;
     font-weight: 500;
+    color: #302E2D;
   }
 
   #__nuxt {

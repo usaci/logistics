@@ -109,7 +109,7 @@
                     this.$emit('onCloseControlMsgBox', false);
                     // 一旦DOMに追加したデータを削除する
                     if(this.$props.isTouchDevice === false) {
-                        icon.removeChild(icon.children[1]);
+                        icon.remove();
                     }
                 }, 7000)
                 
@@ -158,7 +158,7 @@
     }
 
     .controlBox__title {
-        font-size: 2.6rem;
+        font-size: 2.4rem;
         font-weight: bold;
         margin-bottom: 2rem;
         text-align: center;
@@ -185,8 +185,12 @@
     }
 
     .controlBox__icon img {
-        width: 75px;
+        width: 90px;
         height: auto;
+    }
+
+    @media screen and (max-width: 768px){
+        
     }
 
 </style>
