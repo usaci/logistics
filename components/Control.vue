@@ -107,11 +107,15 @@
                     this.$el.style.opacity = 0;
                     this.$el.style.visibility = "hidden";
                     this.$emit('onCloseControlMsgBox', false);
+                }, 7000);
+
+                setTimeout(() => {
                     // 一旦DOMに追加したデータを削除する
                     if(this.$props.isTouchDevice === false) {
-                        icon.remove();
+    
+                        icon.children[1].remove();
                     }
-                }, 7000)
+                }, 8000);
                 
             }
         }, 
