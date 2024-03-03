@@ -19,8 +19,7 @@
             closeMsgBox() {
                 // メッセージボックスを閉じる
                 this.$emit('onCloseMsgBox', false);
-                this.isOpenStatus = false;
-                console.log('close');
+                this.isOpenStatus = false;  
             },
             openControlBox() {
                 // 操作説明のメッセージボックスを開く
@@ -65,7 +64,7 @@
         opacity: 0;
         transition: .4s;
         pointer-events: none;
-    box-shadow: 0px 0px 0px 1000px rgb(0 0 0 / 0.14);
+        box-shadow: 0px 0px 0px 1000px rgb(0 0 0 / 0.14);
     }
 
     .msgBox.isOpen {
@@ -101,7 +100,7 @@
         }
 
         .msgBox__title {
-            font-size: 2.0rem;
+            font-size: 2.2rem;
             margin-bottom: 1rem;
         }
     }

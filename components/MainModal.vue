@@ -92,7 +92,7 @@
         opacity: 0;
         transition: .4s;
         pointer-events: none;
-        height: fit-content;
+        height: fit-content; 
         max-height: 100%;
         overflow: scroll;
         box-shadow: 0px 0px 0px 1000px rgb(0 0 0 / 0.14);
@@ -123,12 +123,12 @@
     }
 
     .mainModal .mainModal__ttl.problem:before {
-        background: url(icons/alert.png) no-repeat;
+        background: url("/icons/alert.png") no-repeat;
         background-size: contain;
     }
 
     .mainModal .mainModal__ttl.solution:before {
-        background: url(icons/checked.png) no-repeat;
+        background: url("/icons/checked.png") no-repeat;
         background-size: contain;
     }
     .mainModal .mainModal__quote .inner {
@@ -204,8 +204,15 @@
         display: flex;
     }
 
+    .mainModal .mainModal__main .flex figure {
+        width: 33%;
+    }
+
+    .mainModal .mainModal__main .flex figure > img{
+        width: 100%;
+    }
     .mainModal .mainModal__main em {
-        background: #ffde6a;
+        background: #F6CD3E;
         font-style: normal;
         font-weight: bold;
     }
@@ -213,7 +220,7 @@
         text-align: center;
     }
     .mainModal .mainModal__main figure > img {
-        width: 200px;
+        width: 150px;
         margin: 0 auto;
     }
     @media screen and (max-width: 768px){

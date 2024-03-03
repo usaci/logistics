@@ -51,17 +51,14 @@
                 // 見た目上の処理
                 const menu = this.$el.children[0].children[0];
                 const menuInner = menu.children[0];
-                console.log(menuInner)
                 menu.style.opacity = 0;
                 menu.style.visibility = "hidden";
                 setTimeout(()=>{
                     menu.style.display = "none";
                     menuInner.scrollTop = 0;
-                    console.log(menu.scrollTop)
                 }, 80);
             },
             showControlBox() {
-                console.log(this.$props.controlBoxIsOpen);
                 if(this.$props.controlBoxIsOpen === false) {
                     this.$emit('onOpenControlMsgBox');
                 }
@@ -184,6 +181,7 @@
         margin: 0 auto;
         color: #fff;
         text-align: center;
+        
     }
 
     .siteHeader .siteHeader__btn .inner.isActive {
@@ -258,7 +256,6 @@
     }
 
     .siteHeader #siteHeader__nav .inner {
-        width: 70%;
         max-width: 1200px;
         margin: 0 auto;
         text-align: center;
@@ -266,6 +263,9 @@
         transform: translate(-50%, -50%);
         top: 50%;
         left: 50%;
+         width: 70%;
+        padding: 6rem;
+        height: 100%;
     }
     
     .siteHeader #siteHeader__nav .inner .siteHeader__nav-list {
@@ -285,6 +285,17 @@
         margin-bottom: 2rem;
         font-size: 2.0rem;
         font-weight: bold;
+    }
+
+    .siteHeader__text:before {
+        content: "";
+        display: inline-block;
+        background-image: url("/icons/alert.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        width: 1.9rem;
+        height: 2.8rem;
+        transform: translate(-8px, 5px);
     }
 
     .siteHeader #siteHeader__nav .backToStart {
@@ -394,7 +405,7 @@
         /* ナビゲーション周り */
         .siteHeader #siteHeader__nav .inner {
             width: 100%;
-            padding: 10rem 2rem 4rem;
+            padding: 10rem 2rem 10rem;
             height: 100svh;
             overflow: scroll;
         }
@@ -417,15 +428,5 @@
             font-weight: bold;
         }
 
-        .siteHeader__text:before {
-            content: "";
-            display: inline-block;
-            background-image: url("/icons/alert.png");
-            background-size: cover;
-            background-repeat: no-repeat;
-            width: 1.9rem;
-            height: 2.8rem;
-            transform: translate(-8px, 5px);
-        }
     }
 </style>

@@ -23,7 +23,7 @@
         text-align: center;
         margin: 0 auto 1.4rem;
         transition: all .2s;      
-        transition: background-color .2s;
+        transition: opacity .2s;
         max-width: 600px;
         border-radius: 6px;
         overflow: hidden;
@@ -37,12 +37,13 @@
     }
 
     .btn:hover {
-        background-color: #3918D9;
+        opacity: 0.8;
     }
 
     .btn.btnIsBorder:hover {
         background: #1771DA;
         color: #fff;
+        opacity: 1;
     }
 
     .btn.btnIsBorder:after {

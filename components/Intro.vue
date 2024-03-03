@@ -26,19 +26,19 @@
                 <div class="slider slider__top">
                     <div class="slider-wrapper">
                         <img src="/icons/ramen.png" alt="">
-                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/truck_blue.png" alt="">
                         <img src="/icons/temperture.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_blue.png" alt="">
 
                         <img src="/icons/ramen.png" alt="">
-                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/truck_blue.png" alt="">
                         <img src="/icons/temperture.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_blue.png" alt="">
                         
                         <img src="/icons/ramen.png" alt="">
-                        <img src="/icons/truck_green.png" alt="">
+                        <img src="/icons/truck_blue.png" alt="">
                         <img src="/icons/temperture.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_blue.png" alt="">
@@ -50,18 +50,19 @@
                         <img src="/icons/danball.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_red.png" alt="">
-                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/parts.png" alt="">
 
                         <img src="/icons/truck_green.png" alt="">
                         <img src="/icons/danball.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_red.png" alt="">
-                        <img src="/icons/ramen.png" alt="">
+                        <img src="/icons/parts.png" alt="">
 
                         <img src="/icons/truck_green.png" alt="">
                         <img src="/icons/danball.png" alt="">
                         <img src="/icons/vegs.png" alt="">
                         <img src="/icons/car_red.png" alt="">
+                        <img src="/icons/parts.png" alt="">
                     </div>
                 </div>
                 <div class="inner">

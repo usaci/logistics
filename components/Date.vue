@@ -16,10 +16,6 @@
         methods: {
             // 実際に日付を計算する
             calcDays() {
-                gsap.to(this.time, {
-                    year: 2031,
-                    duration: 1,
-                });
                 // 2, 4, 6, 9, 11
                 const samurai = [4, 6, 9, 11];
                 if(this.time.month === 2) {
@@ -51,14 +47,7 @@
                         }
                     }
                 }
-            }, 
-            calcYears() {
-                gsap.to(this.time, {
-                    year: 2030,
-                    duration: 6,
-                    ease: "power1.inOut"
-                });
-            }
+            },
         }, 
         props: {
             whereSceneIs: Number,
@@ -78,17 +67,20 @@
                 // タイマーを設定
                 if(this.whereSceneIs === 1) {
                     this.isDateActive = true;
-                    console.log(this.isDateActive);
                 }else if(this.whereSceneIs === 2) {
                     this.timer = setInterval(this.calcDays, 20);
                 }
             }, 
-            "time.month": function() {
+            "time.month": function(val) {
+                if(!(val === 4) && this.time.year < 2030) {
+                    this.time.year++;
+                } 
                 if(this.time.year === 2030 ) {
                     // タイマーを解除する
                     clearInterval(this.timer);
                 }
-            }
+            }, 
+            
         },
     }
 </script>
